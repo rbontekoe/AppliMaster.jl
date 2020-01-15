@@ -1,0 +1,4 @@
+name = "AppliMaster"
+uuid = "c8206eb0-3793-11ea-1d9e-09bcc8ed625d"
+authors = ["Rob Bontekoe <rbontekoe@appligate.nl>"]
+version = "0.1.0"

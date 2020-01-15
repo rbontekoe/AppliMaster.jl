@@ -49,7 +49,7 @@ end
 
     db = connect("./ledger.sqlite")
 
-    r = retrieve(db, "LEDGER", "accountid = 1300") # account receivable
+    r = retrieve(db, "LEDGER", "accountid = 1300") # accounts receivable
     @test sum(r.debit - r.credit) == 1210
     r = retrieve(db, "LEDGER", "accountid = 1150") # bank
     @test sum(r.debit - r.credit) == 3630

@@ -5,21 +5,21 @@ using AppliSales
 
 orders = AppliSales.process()
 
-# create unpaid invoices from order
+# create unpaid invoices from order and journal entries for generalledger
 using AppliInvoicing
 
-unpaid_invoices = AppliInvoicing.process(orders)
+journal_entries_unpaid_invoices = AppliInvoicing.process(orders)
 
-# process journal unpaid statements
+# process journal entries
 using AppliGeneralLedger
 
-AppliGeneralLedger.process(unpaid_invoices)
+AppliGeneralLedger.process(journal_entries_unpaid_invoices)
 
 # process bankstatements
-paid_invoices = AppliInvoicing.process()
+journal_entries_invoices_paid = AppliInvoicing.process()
 
-# processjournal paid statements
-AppliGeneralLedger.process(paid_invoices)
+# process journal entries
+AppliGeneralLedger.process(journal_entries_invoices_paid)
 
 # get data form general ledger
 using AppliSQLite

@@ -38,22 +38,25 @@ end
     run(cmd)
 end
 
-@testset "Test GeneralLedger - accounts receivable" begin
+@testset "Test GeneralLedger - accounts receivable, bank, vat, sales" begin
     orders = AppliSales.process()
-    unpaid_invoices = AppliInvoicing.process(orders)
-    AppliGeneralLedger.process(unpaid_invoices)
-    paid_invoices = AppliInvoicing.process()
-    AppliGeneralLedger.process(paid_invoices)
+
+    journal_entries_unpaid_invoices = AppliInvoicing.process(orders)
+    AppliGeneralLedger.process(journal_entries_unpaid_invoices)
+
+    journal_entries_paid_invoicess = AppliInvoicing.process()
+    AppliGeneralLedger.process(journal_entries_paid_invoicess)
 
     db = connect("./ledger.sqlite")
 
-    r = retrieve(db, "LEDGER", "accountid = 1300")
+    r = retrieve(db, "LEDGER", "accountid = 1300") # account receivable
     @test sum(r.debit - r.credit) == 1210
-    r = retrieve(db, "LEDGER", "accountid = 1150")
+    r = retrieve(db, "LEDGER", "accountid = 1150") # bank
     @test sum(r.debit - r.credit) == 3630
-    r = retrieve(db, "LEDGER", "accountid = 4000")
+
+    r = retrieve(db, "LEDGER", "accountid = 4000") # vat
     @test sum(r.credit - r.debit) == 840
-    r = retrieve(db, "LEDGER", "accountid = 8000")
+    r = retrieve(db, "LEDGER", "accountid = 8000") # sales
     @test sum(r.credit - r.debit) == 4000
 
     cmd = `rm invoicing.sqlite ledger.sqlite`

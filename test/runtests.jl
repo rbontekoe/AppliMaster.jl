@@ -2,7 +2,7 @@
 
 using Test
 
-using AppliSales, AppliInvoicing, AppliGeneralLedger, AppliSQLite
+using AppliSales, AppliInvoicing, AppliGeneralLedger, AppliSQLite, SQLite
 
 @testset "Test AppliSales" begin
     orders = AppliSales.process()
@@ -14,8 +14,10 @@ using AppliSales, AppliInvoicing, AppliGeneralLedger, AppliSQLite
 end
 
 @testset " Test AppliInvoicing - unpaid invoices" begin
+    db = connect(SQLite.DB, "./invoicing.sqlite")
     orders = AppliSales.process()
-    unpaid_invoices = AppliInvoicing.process(orders)
+    entries = AppliInvoicing.process(db, orders)
+    unpaid_invoices = retrieve(db, "UNPAID")
     @test length(unpaid_invoices) == 3
     @test unpaid_invoices[1].from == 1300
     @test unpaid_invoices[1].to == 8000
@@ -24,7 +26,7 @@ end
     run(cmd)
 end
 
-@testset " Test AppliInvoicing - paid invoices" begin
+@testset "Test AppliInvoicing - paid invoices" begin
     orders = AppliSales.process()
     unpaid_invoices = AppliInvoicing.process(orders)
     paid_invoices = AppliInvoicing.process()

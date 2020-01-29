@@ -2,7 +2,7 @@
 
 using Test
 
-using AppliSales, AppliInvoicing, AppliGeneralLedger, AppliSQLite, SQLite
+using AppliSQLite, AppliSales, AppliGeneralLedger, AppliInvoicing
 
 @testset "Test AppliSales" begin
     orders = AppliSales.process()
@@ -14,52 +14,59 @@ using AppliSales, AppliInvoicing, AppliGeneralLedger, AppliSQLite, SQLite
 end
 
 @testset " Test AppliInvoicing - unpaid invoices" begin
-    db = connect(SQLite.DB, "./invoicing.sqlite")
+    db = connect("./invoicing.sqlite")
     orders = AppliSales.process()
-    entries = AppliInvoicing.process(db, orders)
-    unpaid_invoices = retrieve(db, "UNPAID")
+    AppliInvoicing.process(db, orders)
+    unpaid_invoices = retrieve_unpaid_invoices(db)
     @test length(unpaid_invoices) == 3
-    @test unpaid_invoices[1].from == 1300
-    @test unpaid_invoices[1].to == 8000
-    @test unpaid_invoices[1].vat == 210
+    @test unpaid_invoices[1].id == "A1001"
     cmd = `rm invoicing.sqlite`
     run(cmd)
 end
 
 @testset "Test AppliInvoicing - paid invoices" begin
+    db = connect("./invoicing.sqlite")
     orders = AppliSales.process()
-    unpaid_invoices = AppliInvoicing.process(orders)
-    paid_invoices = AppliInvoicing.process()
-    @test length(paid_invoices) == 2
-    @test paid_invoices[1].from == 1150
-    @test paid_invoices[1].to == 1300
-    @test paid_invoices[1].invoice_nbr == "Invoice A1002"
-    @test paid_invoices[1].debit == 2420
-    @test paid_invoices[1].credit == 0
+    entries = AppliInvoicing.process(db, orders)
+    @test length(entries) == 3
+    @test entries[1].from == 1300
+    @test entries[1].to == 8000
+    @test entries[1].debit == 1000
+    @test entries[1].credit == 0
+    @test entries[1].vat == 210.0
     cmd = `rm invoicing.sqlite`
     run(cmd)
 end
 
 @testset "Test GeneralLedger - accounts receivable, bank, vat, sales" begin
+    db_inv = connect("./invoicing.sqlite")
+    db_ledger = connect("./ledger.sqlite")
+
     orders = AppliSales.process()
 
-    journal_entries_unpaid_invoices = AppliInvoicing.process(orders)
-    AppliGeneralLedger.process(journal_entries_unpaid_invoices)
+    journal_entries_unpaid_invoices = AppliInvoicing.process(db_inv, orders)
+    AppliGeneralLedger.process(db_ledger, journal_entries_unpaid_invoices)
 
-    journal_entries_paid_invoicess = AppliInvoicing.process()
-    AppliGeneralLedger.process(journal_entries_paid_invoicess)
+    unpaid_invoices = AppliInvoicing.retrieve_unpaid_invoices(db_inv)
 
-    db = connect("./ledger.sqlite")
+    stms = AppliInvoicing.read_bank_statements("./bank.csv")
 
-    r = retrieve(db, "LEDGER", "accountid = 1300") # accounts receivable
+    journal_entries_paid_invoices = AppliInvoicing.process(db_inv, unpaid_invoices, stms)
+
+    AppliGeneralLedger.process(db_ledger, journal_entries_paid_invoices)
+
+    r = retrieve(db_ledger, "LEDGER", "accountid = 1300") # accounts receivable
     @test sum(r.debit - r.credit) == 1210
-    r = retrieve(db, "LEDGER", "accountid = 1150") # bank
+    r = retrieve(db_ledger, "LEDGER", "accountid = 1150") # bank
     @test sum(r.debit - r.credit) == 3630
 
-    r = retrieve(db, "LEDGER", "accountid = 4000") # vat
+    r = retrieve(db_ledger, "LEDGER", "accountid = 4000") # vat
     @test sum(r.credit - r.debit) == 840
-    r = retrieve(db, "LEDGER", "accountid = 8000") # sales
+    r = retrieve(db_ledger, "LEDGER", "accountid = 8000") # sales
     @test sum(r.credit - r.debit) == 4000
+
+    r = retrieve(db_ledger, "LEDGER")
+    @test sum(r.debit - r.credit) == 0.0
 
     cmd = `rm invoicing.sqlite ledger.sqlite`
     run(cmd)

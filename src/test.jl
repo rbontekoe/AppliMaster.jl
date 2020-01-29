@@ -74,6 +74,6 @@ println("Sales: € $sales")
 # cleanup
 flush(io)
 
-stm = `rm invoicing.sqlite ledger.sqlite`
+stm = `rm invoicing.sqlite ledger.sqlite log_master.txt`
 
 run(stm)

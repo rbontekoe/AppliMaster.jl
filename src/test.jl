@@ -3,8 +3,6 @@
 using AppliSales
 using AppliGeneralLedger
 using AppliInvoicing
-using DataFrames
-using Dates
 
 # activateing logging
 # see: https://discourse.julialang.org/t/how-to-save-logging-output-to-a-log-file/14004/5
@@ -59,7 +57,7 @@ println(r)
 r = retrieve(db2, "LEDGER", "accountid = 1300")
 
 account_receivable = sum(r.debit - r.credit)
-@info("Balance of accounts receivable is $(account_receivable). Should be 1200")
+@info("Balance of accounts receivable is $(account_receivable). Should be 1210")
 
 println("Status accounts receivable: € $account_receivable") # should be € 1210.0
 
@@ -70,6 +68,7 @@ sales = sum(r.credit - r.debit) # should return € 4000.0
 @info("Sales is $(sales). Should be 4000.")
 
 println("Sales: € $sales")
+
 
 # cleanup
 flush(io)

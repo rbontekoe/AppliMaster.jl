@@ -3,10 +3,18 @@
 # enable distrbuted computing
 using Distributed
 
+const PATH_DB = "./invoicing.sqlite"
+const PATH_CSV = "./bank.csv"
+const PATH_DB_LEDGER = "./ledger.sqlite"
+
+# get listener
+include("./myfunctions.jl")
+
 # this should be the next step
 addprocs(4)
 p = 3 # invoicing
 q = 4 # general ledger
+r = 5
 
 # then define the packages
 #@everywhere using Dates
@@ -14,41 +22,25 @@ q = 4 # general ledger
 @everywhere using AppliGeneralLedger
 @everywhere using AppliInvoicing
 
-const PATH_DB = "./invoicing.sqlite"
-const PATH_CSV = "./bank.csv"
-
 # get the orders
 orders = AppliSales.process()
 
-journal_entries_1 = @fetchfrom p AppliInvoicing.process(PATH_DB, orders)
+const c1 = Channel(32)
 
-journal_entries_2 = @fetchfrom p begin
-    # get Bank statements and the unpaid invoices
-    stms = AppliInvoicing.read_bank_statements(PATH_CSV)
-    unpaid_invoices = retrieve_unpaid_invoices(PATH_DB)
+@async test_idea1(c1, p) # invoicing
 
-    # create journal entries & save paid invoices
-    AppliInvoicing.process(PATH_DB, unpaid_invoices, stms)
-end
+@async test_idea2(c1, q) # general ledger
 
+@async test_idea3(c1, 5) # invoicing
 
-# =========================================================================
+put!(c1, orders)
 
-const PATH_DB_LEDGER = "./ledger.sqlite"
+stms = AppliInvoicing.read_bank_statements(PATH_CSV)
 
-#result = @spawnat p begin
-#           AppliGeneralLedger.process(PATH_DB_LEDGER, journal_entries_1)
-#end
+sleep(30)
 
-#fetch(result)
+put!(c1, stms)
 
-result = @fetchfrom p begin
-    AppliGeneralLedger.process(PATH_DB_LEDGER, journal_entries_1)
-end
-
-result = @fetchfrom p begin
-    AppliGeneralLedger.process(PATH_DB_LEDGER, journal_entries_2)
-end
 
 # =======================================================================
 # inspect the database ledger.sqlite
@@ -58,9 +50,9 @@ using AppliSQLite
 db2 = connect(PATH_DB_LEDGER)
 
 # get all records
-r = retrieve(db2, "LEDGER")
+#r = retrieve(db2, "LEDGER")
 
-println(r)
+#println(r)
 
 # get status of accouts receivable
 # get all records of accounts receivable
@@ -78,5 +70,5 @@ sales = sum(r.credit - r.debit) # should return € 4000.0
 println("Sales: € $sales")
 
 # cleanup
-stm = `rm invoicing.sqlite ledger.sqlite`
-run(stm)
+#stm = `rm invoicing.sqlite ledger.sqlite`
+#run(stm)

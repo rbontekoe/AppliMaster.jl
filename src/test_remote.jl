@@ -36,12 +36,6 @@ end
 
 const PATH_DB_LEDGER = "./ledger.sqlite"
 
-#result = @spawnat p begin
-#           AppliGeneralLedger.process(PATH_DB_LEDGER, journal_entries_1)
-#end
-
-#fetch(result)
-
 result = @fetchfrom p begin
     AppliGeneralLedger.process(PATH_DB_LEDGER, journal_entries_1)
 end

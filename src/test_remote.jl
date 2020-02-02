@@ -1,12 +1,10 @@
-# test2.jl
+# test_remote.jl
 
 # enable distrbuted computing
 using Distributed
 
 # this should be the next step
 addprocs(4)
-p = 3 # invoicing
-q = 4 # general ledger
 
 # then define the packages
 #@everywhere using Dates
@@ -20,9 +18,9 @@ const PATH_CSV = "./bank.csv"
 # get the orders
 orders = AppliSales.process()
 
-journal_entries_1 = @fetchfrom p AppliInvoicing.process(PATH_DB, orders)
+journal_entries_1 = @fetch AppliInvoicing.process(PATH_DB, orders)
 
-journal_entries_2 = @fetchfrom p begin
+journal_entries_2 = @fetch begin
     # get Bank statements and the unpaid invoices
     stms = AppliInvoicing.read_bank_statements(PATH_CSV)
     unpaid_invoices = retrieve_unpaid_invoices(PATH_DB)
@@ -36,11 +34,11 @@ end
 
 const PATH_DB_LEDGER = "./ledger.sqlite"
 
-result = @fetchfrom p begin
+result = @fetch begin
     AppliGeneralLedger.process(PATH_DB_LEDGER, journal_entries_1)
 end
 
-result = @fetchfrom p begin
+result = @fetch begin
     AppliGeneralLedger.process(PATH_DB_LEDGER, journal_entries_2)
 end
 
@@ -57,19 +55,18 @@ r = retrieve(db2, "LEDGER")
 println(r)
 
 # get status of accouts receivable
+
 # get all records of accounts receivable
 r = retrieve(db2, "LEDGER", "accountid = 1300")
 # calculate and print the balance
 account_receivable = sum(r.debit - r.credit)
 @info("Balance of accounts receivable is $(account_receivable). Should be 1210")
-println("Status accounts receivable: € $account_receivable") # should be € 1210.0
 
 # get status of sales
 r = retrieve(db2, "LEDGER", "accountid = 8000")
 # calculate and print the balance
 sales = sum(r.credit - r.debit) # should return € 4000.0
 @info("Sales is $(sales). Should be 4000.")
-println("Sales: € $sales")
 
 # cleanup
 stm = `rm invoicing.sqlite ledger.sqlite`

@@ -1,8 +1,11 @@
 # check_dbs.jl
 
+@info("running check_dbs.jl")
+
 # =======================================================================
 # inspect the database ledger.sqlite
 # =======================================================================
+
 using AppliSQLite
 
 const PATH_DB = "./invoicing.sqlite"

@@ -1,24 +1,16 @@
-# test_remote3.jl
+# test_remote_channels.jl
+
+@info("running test_remote_channel.jl")
 
 # enable distrbuted computing
 using Distributed
 
-# activateing logging
-# see: https://discourse.julialang.org/t/how-to-save-logging-output-to-a-log-file/14004/5
-using Logging
-io = open("log_master.txt", "w+")
-logger = SimpleLogger(io)
-global_logger(logger)
+# this should be the next step
+np =addprocs(4)
+@info("number of processes is $(length(np))")
 
-# get tasks
-include("./api/myfunctions2.jl");
-
-# this should be the next step.
-# in the future we will run the tasks in different containers.
-addprocs(4)
-p = 3 # invoicing
-q = 4 # general ledger
-r = 5
+# get tasks and dispatcher
+include("./api/myfunctions.jl");
 
 # activate the packages
 @everywhere using AppliSales
@@ -27,20 +19,22 @@ r = 5
 
 # start dispatcher
 rx = dispatcher()
+@info("Dispatcher started")
 
 # Processing the orders
+@info("Master will ask for 3 test orders from the AppliSales module")
 orders = AppliSales.process()
+@info("Master received $(length(orders)) orders")
+@info("Master will put $(length(orders)) orders on rx channel")
 put!(rx, orders)
 
-sleep(0.1)
-
 # processing the uppaid invoices
+@info("Master will read file with 2 bank statements")
 stms = AppliInvoicing.read_bank_statements(PATH_CSV)
+@info("Master got $(length(stms)) bank statements")
+@info("Master will put $(length(stms)) bank statements on rx channel")
 put!(rx, stms)
 
 # unkown type
-test = "Unkown"
+test = "Test unkown type"
 put!(rx, test)
-
-# write output to log_master.txt
-flush(io)

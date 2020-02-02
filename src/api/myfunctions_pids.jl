@@ -1,3 +1,5 @@
+# myfunctions_pids.jl
+
 using Distributed
 
 const PATH_DB = "./invoicing.sqlite"
@@ -33,7 +35,7 @@ function task_2(rx, pid)
         if isready(tx)
             entries = take!(tx)
             if typeof(entries) == Array{AppliGeneralLedger.JournalEntry,1}
-                @info("task_2: Processing Journal Entries")
+                @info("task_2: Processing journal entries")
                 result = @fetchfrom pid AppliGeneralLedger.process(PATH_DB_LEDGER, entries)
                 #put!(tx, result)
             end
@@ -42,10 +44,10 @@ function task_2(rx, pid)
         end
     end
     return tx
-end # test_2
+end # task_2(rx, pid)
 
 # =================================
-# task_2 - get paid journal entries
+# task_3 - get paid journal entries
 # =================================
 function task_3(rx, pid)
     tx = Channel(32)
@@ -53,7 +55,7 @@ function task_3(rx, pid)
         if isready(tx)
             stms = take!(tx)
             if typeof(stms) == Array{AppliInvoicing.BankStatement,1}
-                @info("task_3: Processing unpaid invoices")
+                @info("Task_3: Processing unpaid invoices")
                 result = @fetchfrom pid begin
                     unpaid_invoices = retrieve_unpaid_invoices(PATH_DB)
                     AppliInvoicing.process(PATH_DB, unpaid_invoices, stms)
@@ -65,7 +67,7 @@ function task_3(rx, pid)
         end
     end
     return tx
-end # test_3
+end # task_3(rx, pid)
 
 
 # =================================
@@ -76,12 +78,12 @@ function dispatcher()
 
     tx1 = task_1(rx, p) # process orders
     tx2 = task_2(rx, q) # process journal entries
-    tx3 = task_3(rx, r) # process unpaid invoices
+    tx3 = task_3(rx, p) # process unpaid invoices
 
     @async while true
         if isready(rx)
-            value = take!(rx)
-            @info("Type: $(typeof(value))")
+            value = Take!(rx)
+            @info("type: $(typeof(value))")
             if typeof(value) == Array{AppliSales.Order, 1}
                 put!(tx1, value)
             elseif typeof(value) == Array{AppliGeneralLedger.JournalEntry,1}

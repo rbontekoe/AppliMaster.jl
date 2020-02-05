@@ -43,7 +43,6 @@ runcode(channel) = begin
     #unkown type
     test = "Test unkown type"
     put!(rx, test)
-
 end
 
 runcode(rx);

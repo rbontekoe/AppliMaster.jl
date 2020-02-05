@@ -22,7 +22,7 @@ function task_1(rx)
                 put!(rx, result)
             end
         else
-            @info("task_1 will wait for data")
+            @info("task_1 is waiting for data")
             wait(tx)
         end
     end
@@ -45,7 +45,7 @@ function task_2(rx)
                 #put!(tx, result)
             end
         else
-            @info("task_2 will wait for data")
+            @info("task_2 is waiting for data")
             wait(tx)
         end
     end
@@ -71,7 +71,7 @@ function task_3(rx)
                 put!(rx, result)
             end
         else
-            @info("task_3 will wait for data")
+            @info("task_3 is waiting for data")
             wait(tx)
         end
     end

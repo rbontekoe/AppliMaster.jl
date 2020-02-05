@@ -6,10 +6,10 @@ using AppliInvoicing
 
 # activateing logging
 # see: https://discourse.julialang.org/t/how-to-save-logging-output-to-a-log-file/14004/5
-using Logging
-io = open("log_master.txt", "w+")
-logger = SimpleLogger(io)
-global_logger(logger)
+#using Logging
+#io = open("log_master.txt", "w+")
+#logger = SimpleLogger(io)
+#global_logger(logger)
 
 const PATH_DB = "./invoicing.sqlite"
 
@@ -71,7 +71,7 @@ println("Sales: € $sales")
 
 
 # cleanup
-flush(io)
+#flush(io)
 
 stm = `rm invoicing.sqlite ledger.sqlite log_master.txt`
 

@@ -1,21 +1,24 @@
 # test_remote_channels.jl
-
-@info("running test_remote_channel.jl")
+@info("test_remote_channels.jl")
 
 # enable distrbuted computing
 using Distributed
+@info("Enabled distributed computing")
 
 # this should be the next step
-np =addprocs(4)
+np = addprocs(4)
 @info("number of processes is $(length(np))")
 
 # get tasks and dispatcher
 include("./api/myfunctions.jl");
+@info("Loaded ./api/myfunctions.jl")
 
-# activate the packages
-@everywhere using AppliSales
+# activate the packages (before the processes are created)
+using AppliSales # only used by
 @everywhere using AppliGeneralLedger
 @everywhere using AppliInvoicing
+
+@info("running test_remote_channel.jl")
 
 # start dispatcher
 rx = dispatcher()

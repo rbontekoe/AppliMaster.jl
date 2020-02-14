@@ -4,6 +4,11 @@
 using Distributed
 @info("Enabled distributed computing")
 
+# activate the packages (before the processes are created)
+@everywhere using AppliSales
+@everywhere using AppliGeneralLedger
+@everywhere using AppliInvoicing
+
 # this should be the next step
 np = addprocs(4)
 @info("number of processes is $(length(np))")
@@ -12,10 +17,7 @@ np = addprocs(4)
 include("./api/myfunctions.jl");
 @info("Loaded ./api/myfunctions.jl")
 
-# activate the packages (before the processes are created)
-using AppliSales # only used by
-@everywhere using AppliGeneralLedger
-@everywhere using AppliInvoicing
+
 
 @info("running test_remote_channel.jl")
 
@@ -23,30 +25,25 @@ using AppliSales # only used by
 rx = dispatcher()
 @info("Dispatcher started")
 
-# Processing the orders
-runcode(channel) = begin
-    @info("Hallo")
+#runcode(channel) = begin
+# start the application
+@info("The Master will start the process and asks for test orders from the AppliSales module")
+put!(rx, "START")
 
-    @info("Master will ask for 3 test orders from the AppliSales module")
-    orders = AppliSales.process()
-    @info("Master received $(length(orders)) orders")
-    @info("Master will put $(length(orders)) orders on rx channel")
-    put!(rx, orders)
+# processing the uppaid invoices
+#@info("Master will read file with 2 bank statements")
+stms = AppliInvoicing.read_bank_statements(PATH_CSV)
+@info("Master got $(length(stms)) bank statements")
+@info("Master will put $(length(stms)) bank statements on rx channel")
+put!(rx, stms)
 
-    # processing the uppaid invoices
-    @info("Master will read file with 2 bank statements")
-    stms = AppliInvoicing.read_bank_statements(PATH_CSV)
-    @info("Master got $(length(stms)) bank statements")
-    @info("Master will put $(length(stms)) bank statements on rx channel")
-    put!(rx, stms)
+#unkown type
+test = "Test unkown type"
+put!(rx, test)
+#end
 
-    #unkown type
-    test = "Test unkown type"
-    put!(rx, test)
-end
-
-runcode(rx);
+#runcode(rx);
 
 #stm = `rm invoicing.sqlite ledger.sqlite log_master.txt`
-#stm = `rm invoicing.sqlite ledger.sqlite`
-#run(stm)
+stm = `rm invoicing.sqlite ledger.sqlite`
+@everywhere run(stm)

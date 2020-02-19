@@ -1,26 +1,16 @@
 # test_remote_channels.jl
 
-# enable distrbuted computing
-using Distributed
-@info("Enabled distributed computing")
+# Still PROBLEMS with running processes remote. I created myfunctions2 and removed @fetch
 
 # activate the packages (before the processes are created)
-@everywhere begin
-    using AppliSales
-    using AppliGeneralLedger
-    using AppliInvoicing
-end
+using AppliSales
+using AppliGeneralLedger
+using AppliInvoicing
 #@everywhere using SQLite
 
-# this should be the next step
-np = addprocs(4)
-@info("number of processes is $(length(np))")
-
 # get tasks and dispatcher
-include("./api/myfunctions.jl");
-@info("Loaded ./api/myfunctions.jl")
-
-
+include("./api/myfunctions2.jl");
+@info("Loaded ./api/myfunctions2.jl")
 
 @info("running test_remote_channel.jl")
 
@@ -48,5 +38,5 @@ put!(rx, test)
 #runcode(rx);
 
 #stm = `rm invoicing.sqlite ledger.sqlite log_master.txt`
-@everywhere stm = `rm invoicing.sqlite ledger.sqlite`
-@everywhere run(stm)
+stm = `rm invoicing.sqlite ledger.sqlite`
+run(stm)

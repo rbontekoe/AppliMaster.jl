@@ -2,7 +2,7 @@
 
 [[AppliGeneralLedger]]
 deps = ["DataFrames", "Dates", "SQLite"]
-git-tree-sha1 = "df5c73db79e24c16fc8225415d4fbd36dc38d640"
+git-tree-sha1 = "a74f4f5773a9b6b23d387f17ee322a3c3159a11f"
 repo-rev = "master"
 repo-url = "https://github.com/rbontekoe/AppliGeneralLedger.jl"
 uuid = "153ef306-36d1-11ea-1f0d-e3f38f84e10d"
@@ -10,23 +10,23 @@ version = "0.1.0"
 
 [[AppliInvoicing]]
 deps = ["AppliGeneralLedger", "AppliSales", "CSV", "DataFrames", "Dates", "Logging", "SQLite", "Test"]
-git-tree-sha1 = "fc6dbc76c349498db958af0074624b5d1c4d153d"
+git-tree-sha1 = "9cca0eb0d55c3dc393297eaaf0f73b9c56caa6ba"
 repo-rev = "master"
 repo-url = "https://github.com/rbontekoe/AppliInvoicing.jl"
 uuid = "3941c6da-33b5-11ea-2884-afa98fed5e3b"
-version = "0.2.0"
+version = "0.2.1"
 
 [[AppliSQLite]]
 deps = ["DataFrames", "Dates", "SQLite"]
-git-tree-sha1 = "430358d32e893866e083b826930963297f444997"
+git-tree-sha1 = "1895711f3337b62a49bbd1a8bce1f656bcd1f580"
 repo-rev = "master"
 repo-url = "https://github.com/rbontekoe/AppliSQLite.jl"
-uuid = "9a59758e-2d3a-11ea-1945-73b7de95ad48"
+uuid = "9e99b7bb-3ece-44ad-9a63-9bee711df7d2"
 version = "0.1.0"
 
 [[AppliSales]]
 deps = ["Dates"]
-git-tree-sha1 = "2e4508e40b9926aa9378b9a2bc6a4fae08e035b2"
+git-tree-sha1 = "0cda9204d402eea44cd391fd40cb00395c683623"
 repo-rev = "master"
 repo-url = "https://github.com/rbontekoe/AppliSales.jl"
 uuid = "a1ddd20a-2e39-11ea-38f9-6b919ef027c3"
@@ -43,9 +43,9 @@ version = "0.5.8"
 
 [[CSV]]
 deps = ["CategoricalArrays", "DataFrames", "Dates", "FilePathsBase", "Mmap", "Parsers", "PooledArrays", "Tables", "Unicode", "WeakRefStrings"]
-git-tree-sha1 = "fe9b828d5e7b55431d75d6d180ef843d69dea048"
+git-tree-sha1 = "177e58c6965e6a0f544593b490c38a6c267bd8ce"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-version = "0.5.23"
+version = "0.5.24"
 
 [[CategoricalArrays]]
 deps = ["Compat", "DataAPI", "Future", "JSON", "Missings", "Printf", "Reexport", "Statistics", "Unicode"]
@@ -71,9 +71,9 @@ version = "1.1.0"
 
 [[DataFrames]]
 deps = ["CategoricalArrays", "Compat", "DataAPI", "Future", "InvertedIndices", "IteratorInterfaceExtensions", "Missings", "PooledArrays", "Printf", "REPL", "Reexport", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
-git-tree-sha1 = "00136fcd39d503e66ab1b2eab800c47deaf7ca04"
+git-tree-sha1 = "7d5bf815cc0b30253e3486e8ce2b93bf9d0faff6"
 uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-version = "0.20.0"
+version = "0.20.2"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections"]
@@ -199,10 +199,16 @@ version = "0.2.0"
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
 [[SQLite]]
-deps = ["BinaryProvider", "DataFrames", "Dates", "Libdl", "Random", "Serialization", "Tables", "Test", "WeakRefStrings"]
-git-tree-sha1 = "5c53dd3d239c327812cba66b110c4789e87942c8"
+deps = ["BinaryProvider", "DBInterface", "Dates", "Libdl", "Random", "SQLite_jll", "Serialization", "Tables", "Test", "WeakRefStrings"]
+git-tree-sha1 = "ed4136363fffa6fde220db5345648375a30bb32a"
 uuid = "0aa819cd-b072-5ff4-a722-6bc24af294d9"
-version = "0.9.0"
+version = "1.0.1"
+
+[[SQLite_jll]]
+deps = ["Libdl", "Pkg"]
+git-tree-sha1 = "25675b6872c3fcbe2034510db3a467405b6dc79e"
+uuid = "76ed43ae-9a5d-5a62-8c75-30186b810ce8"
+version = "3.31.1+0"
 
 [[Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
@@ -236,9 +242,9 @@ version = "1.0.0"
 
 [[Tables]]
 deps = ["DataAPI", "DataValueInterfaces", "IteratorInterfaceExtensions", "LinearAlgebra", "TableTraits", "Test"]
-git-tree-sha1 = "aaed7b3b00248ff6a794375ad6adf30f30ca5591"
+git-tree-sha1 = "22eea0f6619df63954b9404c8d47cd42c5d529f9"
 uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
-version = "0.2.11"
+version = "1.0.1"
 
 [[Test]]
 deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]

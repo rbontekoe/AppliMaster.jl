@@ -17,7 +17,7 @@ function task_0(rx)
             @info("task_0 received $(typeof(start))")
             if start == "START"
                 @info("task_0 will start the process remotely")
-                orders = @fetch AppliSales.process()
+                orders = AppliSales.process()
                 @info("task_0 will put $(length(orders)) the orders on rx channel")
                 put!(rx, orders)
                 @info("task_0 has putted $(length(orders)) the orders on rx channel")
@@ -41,7 +41,7 @@ function task_1(rx)
             @info("task_1 received $(typeof(orders))")
             if typeof(orders) == Array{AppliSales.Order, 1}
                 @info("task_1 will process $(length(orders)) orders remotely")
-                result = @fetch AppliInvoicing.process(PATH_DB, orders)
+                result = AppliInvoicing.process(PATH_DB, orders)
                 @info("task_1 will put $(length(result)) journal entries on rx channel")
                 put!(rx, result)
             end
@@ -64,7 +64,7 @@ function task_2(rx)
             @info("task_2 received $(typeof(entries))")
             if typeof(entries) == Array{AppliGeneralLedger.JournalEntry,1}
                 @info("task_2 will process $(length(entries)) journal entries remotely")
-                result = @fetch AppliGeneralLedger.process(PATH_DB_LEDGER, entries)
+                result = AppliGeneralLedger.process(PATH_DB_LEDGER, entries)
                 @info("task_2 saved $(length(result)) journal entries")
                 #put!(tx, result)
             end
@@ -87,7 +87,7 @@ function task_3(rx)
             @info("task_3 received $(typeof(stms))")
             if typeof(stms) == Array{AppliInvoicing.BankStatement,1}
                 @info("task_3 will match unpaid invoices with bank statements")
-                result = @fetch begin
+                result = begin
                     unpaid_invoices = retrieve_unpaid_invoices(PATH_DB)
                     AppliInvoicing.process(PATH_DB, unpaid_invoices, stms)
                 end

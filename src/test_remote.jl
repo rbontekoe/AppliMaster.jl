@@ -3,14 +3,14 @@
 # enable distrbuted computing
 using Distributed
 
-# this should be the next step
-addprocs(4)
-
 # then define the packages
 #@everywhere using Dates
 @everywhere using AppliSales
 @everywhere using AppliGeneralLedger
 @everywhere using AppliInvoicing
+
+# this should be the next step
+addprocs(4)
 
 const PATH_DB = "./invoicing.sqlite"
 const PATH_CSV = "./bank.csv"

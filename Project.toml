@@ -1,12 +1,7 @@
-name = "AppliMaster"
-uuid = "c8206eb0-3793-11ea-1d9e-09bcc8ed625d"
-authors = ["Rob Bontekoe <rbontekoe@appligate.nl>"]
-version = "0.1.0"
-
 [deps]
 AppliGeneralLedger = "153ef306-36d1-11ea-1f0d-e3f38f84e10d"
 AppliInvoicing = "3941c6da-33b5-11ea-2884-afa98fed5e3b"
-AppliSQLite = "9a59758e-2d3a-11ea-1945-73b7de95ad48"
+AppliSQLite = "9e99b7bb-3ece-44ad-9a63-9bee711df7d2"
 AppliSales = "a1ddd20a-2e39-11ea-38f9-6b919ef027c3"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DBInterface = "a10d1c49-ce27-4219-8d33-6db1a4562965"

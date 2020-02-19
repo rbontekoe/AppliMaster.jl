@@ -2,7 +2,7 @@
 
 using Test
 
-using AppliSQLite, AppliSales, AppliGeneralLedger, AppliInvoicing
+using AppliSales, AppliGeneralLedger, AppliInvoicing
 
 @testset "Test AppliSales" begin
     orders = AppliSales.process()
@@ -37,6 +37,8 @@ end
     cmd = `rm invoicing.sqlite`
     run(cmd)
 end
+
+using AppliSQLite
 
 @testset "Test GeneralLedger - accounts receivable, bank, vat, sales" begin
     db_inv_path = "./invoicing.sqlite"

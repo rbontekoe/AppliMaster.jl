@@ -10,16 +10,17 @@ using Distributed
 #logger = SimpleLogger(io)
 #global_logger(logger)
 
+# this should be the next step.
+# in the future we will run the tasks in different containers.
+#addprocs(4)
+addprocs(4; exeflags=`--project=$(Base.active_project())`)
+p = 3 # invoicing (orders/bankstatements)
+q = 4 # general ledger
+
 # activate the packages
 @everywhere using AppliSales
 @everywhere using AppliGeneralLedger
 @everywhere using AppliInvoicing
-
-# this should be the next step.
-# in the future we will run the tasks in different containers.
-addprocs(4)
-p = 3 # invoicing (orders/bankstatements)
-q = 4 # general ledger
 
 # get tasks
 include("./api/myfunctions_pids.jl")
@@ -49,4 +50,4 @@ put!(rx, test)
 
 #stm = `rm invoicing.sqlite ledger.sqlite log_master.txt`
 stm = `rm invoicing.sqlite ledger.sqlite`
-@everywhere run(stm)
+run(stm)

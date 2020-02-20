@@ -4,17 +4,17 @@
 using Distributed
 @info("Enabled distributed computing")
 
+# this should be the next step
+#np = addprocs(4)
+np = addprocs(4; exeflags=`--project=$(Base.active_project())`)
+@info("number of processes is $(length(np))")
+
 # activate the packages (before the processes are created)
 @everywhere begin
     using AppliSales
     using AppliGeneralLedger
     using AppliInvoicing
 end
-#@everywhere using SQLite
-
-# this should be the next step
-np = addprocs(4)
-@info("number of processes is $(length(np))")
 
 # get tasks and dispatcher
 include("./api/myfunctions.jl");

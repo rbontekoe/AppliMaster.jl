@@ -1,16 +1,16 @@
 # This file is machine-generated - editing it directly is not advised
 
 [[AppliGeneralLedger]]
-deps = ["DataFrames", "Dates", "SQLite"]
-git-tree-sha1 = "a74f4f5773a9b6b23d387f17ee322a3c3159a11f"
+deps = ["DataFrames", "Dates", "SQLite", "Test"]
+git-tree-sha1 = "51da9c95f3918de35188d8a12ebaa426212e653e"
 repo-rev = "master"
 repo-url = "https://github.com/rbontekoe/AppliGeneralLedger.jl"
 uuid = "153ef306-36d1-11ea-1f0d-e3f38f84e10d"
-version = "0.1.0"
+version = "0.1.2"
 
 [[AppliInvoicing]]
 deps = ["AppliGeneralLedger", "AppliSales", "CSV", "DataFrames", "Dates", "Logging", "SQLite", "Test"]
-git-tree-sha1 = "9cca0eb0d55c3dc393297eaaf0f73b9c56caa6ba"
+git-tree-sha1 = "eb257bb38baa879a92d54c592cf2acdcb69cb052"
 repo-rev = "master"
 repo-url = "https://github.com/rbontekoe/AppliInvoicing.jl"
 uuid = "3941c6da-33b5-11ea-2884-afa98fed5e3b"
@@ -53,11 +53,17 @@ git-tree-sha1 = "23d7324164c89638c18f6d7f90d972fa9c4fa9fb"
 uuid = "324d7699-5711-5eae-9e2f-1d82baa6b597"
 version = "0.7.7"
 
+[[CodecZlib]]
+deps = ["BinaryProvider", "Libdl", "TranscodingStreams"]
+git-tree-sha1 = "05916673a2627dd91b4969ff8ba6941bc85a960e"
+uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
+version = "0.6.0"
+
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
-git-tree-sha1 = "a4839bd26e3e7f4869a4cf6c31f9f93f47aac7c5"
+git-tree-sha1 = "c437ba8bb82f5ec9a5d8cb881031ffa2dbe1038c"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "3.5.0"
+version = "3.6.0"
 
 [[DBInterface]]
 git-tree-sha1 = "8687a1cc640f088ea2b9c4573b16739ba3917175"
@@ -98,6 +104,12 @@ uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 deps = ["Random", "Serialization", "Sockets"]
 uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
+[[FileIO]]
+deps = ["Pkg"]
+git-tree-sha1 = "2c84c57aced468fa21763c66d3bef33adcd09ec7"
+uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+version = "1.2.2"
+
 [[FilePathsBase]]
 deps = ["Dates", "LinearAlgebra", "Printf", "Test", "UUIDs"]
 git-tree-sha1 = "2cd6e2e7965934f72cb80251f760228e2264bab3"
@@ -122,6 +134,12 @@ version = "1.0.0"
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
 uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
+
+[[JLD2]]
+deps = ["CodecZlib", "DataStructures", "FileIO", "Mmap", "Pkg", "Printf", "UUIDs"]
+git-tree-sha1 = "5deae9f0745ef505ed155a0029629cf08502ccab"
+uuid = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+version = "0.1.11"
 
 [[JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
@@ -200,9 +218,9 @@ uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
 [[SQLite]]
 deps = ["BinaryProvider", "DBInterface", "Dates", "Libdl", "Random", "SQLite_jll", "Serialization", "Tables", "Test", "WeakRefStrings"]
-git-tree-sha1 = "ed4136363fffa6fde220db5345648375a30bb32a"
+git-tree-sha1 = "1fb44fc262049087fef7b2eb7b3bf2b0a6887645"
 uuid = "0aa819cd-b072-5ff4-a722-6bc24af294d9"
-version = "1.0.1"
+version = "1.0.2"
 
 [[SQLite_jll]]
 deps = ["Libdl", "Pkg"]
@@ -249,6 +267,12 @@ version = "1.0.1"
 [[Test]]
 deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[[TranscodingStreams]]
+deps = ["Random", "Test"]
+git-tree-sha1 = "7c53c35547de1c5b9d46a4797cf6d8253807108c"
+uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
+version = "0.9.5"
 
 [[UUIDs]]
 deps = ["Random", "SHA"]

@@ -36,7 +36,6 @@ put!(rx, test)
 #end
 
 #runcode(rx);
-
 #stm = `rm invoicing.sqlite ledger.sqlite log_master.txt`
 stm = `rm invoicing.sqlite ledger.sqlite`
 run(stm)

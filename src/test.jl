@@ -42,6 +42,7 @@ AppliGeneralLedger.process(PATH_DB_LEDGER, journal_entries_1)
 @info("Processed unpaid journal entries")
 
 # process journal entries
+
 AppliGeneralLedger.process(PATH_DB_LEDGER, journal_entries_2)
 @info("Processed paid journal entries")
 

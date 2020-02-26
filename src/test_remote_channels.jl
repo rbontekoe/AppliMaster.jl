@@ -36,6 +36,7 @@ put!(rx, "START")
 # processing the uppaid invoices
 #@info("Master will read file with 2 bank statements")
 stms = AppliInvoicing.read_bank_statements(PATH_CSV)
+
 @info("Master got $(length(stms)) bank statements")
 @info("Master will put $(length(stms)) bank statements on rx channel")
 put!(rx, stms)
@@ -48,5 +49,5 @@ put!(rx, test)
 #runcode(rx);
 
 #stm = `rm invoicing.sqlite ledger.sqlite log_master.txt`
-@everywhere stm = `rm invoicing.sqlite ledger.sqlite`
-@everywhere run(stm)
+stm = `rm invoicing.sqlite ledger.sqlite`
+run(stm)

@@ -36,36 +36,38 @@ journal_entries_2 = AppliInvoicing.process(PATH_DB, unpaid_invoices, stms)
 # =============================
 
 # process journal entries
-const PATH_DB_LEDGER = "./ledger.sqlite"
+#const PATH_DB_LEDGER = "./ledger.sqlite"
+const PATH_DB_LEDGER = "./ledger.txt"
+const PATH_DB_JOURNAL = "./journal.txt"
 
-AppliGeneralLedger.process(PATH_DB_LEDGER, journal_entries_1)
+AppliGeneralLedger.process(PATH_DB_JOURNAL, PATH_DB_LEDGER, journal_entries_1)
 @info("Processed unpaid journal entries")
 
 # process journal entries
 
-AppliGeneralLedger.process(PATH_DB_LEDGER, journal_entries_2)
+AppliGeneralLedger.process(PATH_DB_JOURNAL, PATH_DB_LEDGER, journal_entries_2)
 @info("Processed paid journal entries")
 
 # read all general ledger accounts
-using AppliSQLite
-db2 = connect(PATH_DB_LEDGER)
+r = AppliGeneralLedger.read_from_file(PATH_DB_LEDGER)
 
-r = retrieve(db2, "LEDGER")
+using DataFrames
 
-println(r)
+df = DataFrame(r)
 
-# get status of accouts receivable
-r = retrieve(db2, "LEDGER", "accountid = 1300")
+println(df)
 
-account_receivable = sum(r.debit - r.credit)
+df2 = df[df.accountid .== 1300, :]
+
+account_receivable = sum(df2.debit - df2.credit)
 @info("Balance of accounts receivable is $(account_receivable). Should be 1210")
 
 println("Status accounts receivable: € $account_receivable") # should be € 1210.0
 
 # get status of sales
-r = retrieve(db2, "LEDGER", "accountid = 8000")
+df2 = df[df.accountid .== 8000, :]
 
-sales = sum(r.credit - r.debit) # should return € 4000.0
+sales = sum(df2.credit - df2.debit) # should return € 4000.0
 @info("Sales is $(sales). Should be 4000.")
 
 println("Sales: € $sales")
@@ -74,6 +76,6 @@ println("Sales: € $sales")
 # cleanup
 #flush(io)
 
-stm = `rm invoicing.sqlite ledger.sqlite log_master.txt`
+stm = `rm invoicing.sqlite ledger.txt journal.txt`
 
 run(stm)

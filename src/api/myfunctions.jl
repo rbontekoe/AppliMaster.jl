@@ -56,6 +56,9 @@ end # test_1
 # =================================
 # task_2 - process journal entries
 # =================================
+ledger = "./ledger.txt"
+journal = "./journal.txt"
+
 function task_general_ledger(rx)
     tx = Channel(32)
     @async while true
@@ -64,8 +67,9 @@ function task_general_ledger(rx)
             @info("task_general_ledger received $(typeof(entries))")
             if typeof(entries) == Array{AppliGeneralLedger.JournalEntry,1}
                 @info("task_general_ledger will process $(length(entries)) journal entries remotely")
-                result = @fetch AppliGeneralLedger.process(PATH_DB_LEDGER, entries)
-                @info("task_general_ledger saved $(length(result)) journal entries")
+                result = @fetch AppliGeneralLedger.process(journal, ledger, entries)
+                #@info("task_general_ledger saved $(length(result)) journal entries")
+                @info("task_general_ledger saved the journal entries")
                 #put!(tx, result)
             end
         else

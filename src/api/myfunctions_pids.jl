@@ -55,6 +55,9 @@ end # test_1
 # =================================
 # task_2 - process journal entries
 # =================================
+ledger = "./ledger.txt"
+journal = "./journal.txt"
+
 function task_2(rx, pid)
     tx = Channel(32)
     @async while true
@@ -62,7 +65,7 @@ function task_2(rx, pid)
             entries = take!(tx)
             if typeof(entries) == Array{AppliGeneralLedger.JournalEntry,1}
                 @info("task_2: Processing journal entries")
-                result = @fetchfrom pid AppliGeneralLedger.process(PATH_DB_LEDGER, entries)
+                result = @fetchfrom pid AppliGeneralLedger.process(journal, ledger, entries)
                 #put!(tx, result)
             end
         else

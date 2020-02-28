@@ -2,11 +2,11 @@
 
 [[AppliGeneralLedger]]
 deps = ["DataFrames", "Dates", "Serialization"]
-git-tree-sha1 = "d51df5bb9ffe7d998fe48c1399fd93e45476c7ff"
+git-tree-sha1 = "1a6188bf8023e7b77f7527fbd36d9aacd60d37e0"
 repo-rev = "master"
 repo-url = "https://github.com/rbontekoe/AppliGeneralLedger.jl"
 uuid = "153ef306-36d1-11ea-1f0d-e3f38f84e10d"
-version = "0.2.0"
+version = "0.2.1"
 
 [[AppliInvoicing]]
 deps = ["AppliGeneralLedger", "AppliSales", "CSV", "DataFrames", "Dates", "Logging", "SQLite", "Test"]
@@ -218,9 +218,9 @@ uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
 [[SQLite]]
 deps = ["BinaryProvider", "DBInterface", "Dates", "Libdl", "Random", "SQLite_jll", "Serialization", "Tables", "Test", "WeakRefStrings"]
-git-tree-sha1 = "1fb44fc262049087fef7b2eb7b3bf2b0a6887645"
+git-tree-sha1 = "25d88a45ce804e04a13ca00f1d67a35ac0e2ede6"
 uuid = "0aa819cd-b072-5ff4-a722-6bc24af294d9"
-version = "1.0.2"
+version = "1.0.3"
 
 [[SQLite_jll]]
 deps = ["Libdl", "Pkg"]

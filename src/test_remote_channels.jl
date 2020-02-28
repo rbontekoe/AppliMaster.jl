@@ -16,6 +16,7 @@ np = addprocs(4; exeflags=`--project=$(Base.active_project())`)
     using AppliInvoicing
 end
 
+@info("Enabled distributed computing")
 # get tasks and dispatcher
 include("./api/myfunctions.jl");
 @info("Loaded ./api/myfunctions.jl")

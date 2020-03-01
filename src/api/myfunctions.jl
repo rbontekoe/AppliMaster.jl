@@ -4,7 +4,8 @@ using Distributed
 
 const PATH_DB = "./invoicing.sqlite"
 const PATH_CSV = "./bank.csv"
-const PATH_DB_LEDGER = "./ledger.sqlite"
+const PATH_JOURNAL = "journal.txt"
+const PATH_LEDGER = "ledger.txt"
 
 # =================================
 # task_1 - processing orders
@@ -56,9 +57,6 @@ end # test_1
 # =================================
 # task_2 - process journal entries
 # =================================
-ledger = "./ledger.txt"
-journal = "./journal.txt"
-
 function task_general_ledger(rx)
     tx = Channel(32)
     @async while true
@@ -67,7 +65,7 @@ function task_general_ledger(rx)
             @info("task_general_ledger received $(typeof(entries))")
             if typeof(entries) == Array{AppliGeneralLedger.JournalEntry,1}
                 @info("task_general_ledger will process $(length(entries)) journal entries remotely")
-                result = @fetch AppliGeneralLedger.process(journal, ledger, entries)
+                result = @fetch AppliGeneralLedger.process(PATH_JOURNAL, PATH_LEDGER, entries)
                 #@info("task_general_ledger saved $(length(result)) journal entries")
                 @info("task_general_ledger saved the journal entries")
                 #put!(tx, result)

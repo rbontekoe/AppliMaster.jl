@@ -2,11 +2,11 @@
 
 [[AppliGeneralLedger]]
 deps = ["DataFrames", "Dates", "Serialization"]
-git-tree-sha1 = "1a6188bf8023e7b77f7527fbd36d9aacd60d37e0"
+git-tree-sha1 = "85192446637176abac86e336e42746f6e660ab82"
 repo-rev = "master"
 repo-url = "https://github.com/rbontekoe/AppliGeneralLedger.jl"
 uuid = "153ef306-36d1-11ea-1f0d-e3f38f84e10d"
-version = "0.2.1"
+version = "0.2.7"
 
 [[AppliInvoicing]]
 deps = ["AppliGeneralLedger", "AppliSales", "CSV", "DataFrames", "Dates", "Logging", "SQLite", "Test"]
@@ -181,9 +181,9 @@ version = "1.1.0"
 
 [[Parsers]]
 deps = ["Dates", "Test"]
-git-tree-sha1 = "d112c19ccca00924d5d3a38b11ae2b4b268dda39"
+git-tree-sha1 = "0c16b3179190d3046c073440d94172cfc3bb0553"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "0.3.11"
+version = "0.3.12"
 
 [[Pkg]]
 deps = ["Dates", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Test", "UUIDs"]

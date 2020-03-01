@@ -4,6 +4,13 @@ using Test
 
 using AppliSales, AppliGeneralLedger, AppliInvoicing
 
+using DataFrames, Query
+
+const PATH_DB = "./invoicing.sqlite"
+const PATH_CSV = "./bank.csv"
+const PATH_JOURNAL = "journal.txt"
+const PATH_LEDGER = "ledger.txt"
+
 @testset "Test AppliSales" begin
     orders = AppliSales.process()
     @test length(orders) == 3
@@ -16,62 +23,59 @@ end
 @testset " Test AppliInvoicing - unpaid invoices" begin
     #db = connect("./invoicing.sqlite")
     orders = AppliSales.process()
-    AppliInvoicing.process("./invoicing.sqlite", orders)
-    unpaid_invoices = retrieve_unpaid_invoices("./invoicing.sqlite")
+    AppliInvoicing.process(PATH_DB, orders)
+    unpaid_invoices = retrieve_unpaid_invoices(PATH_DB)
     @test length(unpaid_invoices) == 3
     @test unpaid_invoices[1].id == "A1001"
-    cmd = `rm invoicing.sqlite`
+    cmd = `rm $PATH_DB`
     run(cmd)
 end
 
 @testset "Test AppliInvoicing - paid invoices" begin
     #db = connect("./invoicing.sqlite")
     orders = AppliSales.process()
-    entries = AppliInvoicing.process("./invoicing.sqlite", orders)
+    entries = AppliInvoicing.process(PATH_DB, orders)
     @test length(entries) == 3
     @test entries[1].from == 1300
     @test entries[1].to == 8000
     @test entries[1].debit == 1000
     @test entries[1].credit == 0
     @test entries[1].vat == 210.0
-    cmd = `rm invoicing.sqlite`
+    cmd = `rm $PATH_DB`
     run(cmd)
 end
 
-using AppliSQLite
-
 @testset "Test GeneralLedger - accounts receivable, bank, vat, sales" begin
-    db_inv_path = "./invoicing.sqlite"
-    db_ledger_path = "./ledger.sqlite"
 
     orders = AppliSales.process()
 
-    journal_entries_unpaid_invoices = AppliInvoicing.process(db_inv_path, orders)
-    AppliGeneralLedger.process(db_ledger_path, journal_entries_unpaid_invoices)
+    journal_entries_unpaid_invoices = AppliInvoicing.process(PATH_DB, orders)
+    AppliGeneralLedger.process(PATH_JOURNAL, PATH_LEDGER, journal_entries_unpaid_invoices)
 
-    unpaid_invoices = AppliInvoicing.retrieve_unpaid_invoices(db_inv_path)
+    unpaid_invoices = AppliInvoicing.retrieve_unpaid_invoices(PATH_DB)
 
     stms = AppliInvoicing.read_bank_statements("./bank.csv")
 
-    journal_entries_paid_invoices = AppliInvoicing.process(db_inv_path, unpaid_invoices, stms)
+    journal_entries_paid_invoices = AppliInvoicing.process(PATH_DB, unpaid_invoices, stms)
 
-    AppliGeneralLedger.process(db_ledger_path, journal_entries_paid_invoices)
+    AppliGeneralLedger.process(PATH_JOURNAL, PATH_LEDGER, journal_entries_paid_invoices)
 
-    db = connect(db_ledger_path)
+    df = DataFrame(AppliGeneralLedger.read_from_file(PATH_LEDGER))
 
-    r = retrieve(db, "LEDGER", "accountid = 1300") # accounts receivable
-    @test sum(r.debit - r.credit) == 1210
-    r = retrieve(db, "LEDGER", "accountid = 1150") # bank
-    @test sum(r.debit - r.credit) == 3630
+    df2 = df |> @filter(_.accountid == 1300) |> DataFrame
+    @test sum(df2.debit - df2.credit) == 1210
 
-    r = retrieve(db, "LEDGER", "accountid = 4000") # vat
-    @test sum(r.credit - r.debit) == 840
-    r = retrieve(db, "LEDGER", "accountid = 8000") # sales
-    @test sum(r.credit - r.debit) == 4000
+    df2 = df |> @filter(_.accountid == 1150) |> DataFrame # bank
+    @test sum(df2.debit - df2.credit) == 3630
 
-    r = retrieve(db, "LEDGER")
-    @test sum(r.debit - r.credit) == 0.0
+    df2 = df |> @filter(_.accountid == 4000) |> DataFrame # vat
+    @test sum(df2.credit - df2.debit) == 840
 
-    cmd = `rm invoicing.sqlite ledger.sqlite`
+    df2 = df |> @filter(_.accountid == 8000) |> DataFrame # sales
+    @test sum(df2.credit - df2.debit) == 4000
+
+    @test sum(df.debit - df.credit) == 0.0
+
+    cmd = `rm $PATH_DB $PATH_JOURNAL $PATH_LEDGER`
     run(cmd)
 end

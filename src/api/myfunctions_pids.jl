@@ -4,7 +4,8 @@ using Distributed
 
 const PATH_DB = "./invoicing.sqlite"
 const PATH_CSV = "./bank.csv"
-const PATH_DB_LEDGER = "./ledger.sqlite"
+const PATH_JOURNAL = "./journal.txt"
+const PATH_LEDGER = "./ledger.txt"
 
 # =================================
 # task_0 - processing orders
@@ -55,17 +56,19 @@ end # test_1
 # =================================
 # task_2 - process journal entries
 # =================================
-ledger = "./ledger.txt"
-journal = "./journal.txt"
-
 function task_2(rx, pid)
     tx = Channel(32)
     @async while true
         if isready(tx)
             entries = take!(tx)
             if typeof(entries) == Array{AppliGeneralLedger.JournalEntry,1}
+
+                #@info(entries)
+                #@info("journal: $PATH_JOURNAL")
+                #@info("ledger: $PATH_LEDGER")
+
                 @info("task_2: Processing journal entries")
-                result = @fetchfrom pid AppliGeneralLedger.process(journal, ledger, entries)
+                result = @fetchfrom pid AppliGeneralLedger.process(PATH_JOURNAL, PATH_LEDGER, entries)
                 #put!(tx, result)
             end
         else
@@ -119,27 +122,7 @@ function dispatcher()
     tx2 = task_2(rx, p) # process the journal entries
     tx3 = task_3(rx, q) # process the unpaid invoices
 
-    #=
-    @async while true
-        if isready(rx)
-            value = Take!(rx)
-            @info("type: $(typeof(value))")
-            if typeof(value) == Array{AppliSales.Order, 1}
-                put!(tx1, value)
-            elseif typeof(value) == Array{AppliGeneralLedger.JournalEntry,1}
-                put!(tx2, value)
-            elseif typeof(value) == Array{AppliInvoicing.BankStatement,1}
-                put!(tx3, value)
-            else
-                @warn("No task found for type $(typeof(value))")
-            end
-        else
-            wait(rx)
-        end
-    end
-    return rx
-end # dispatcher
-=#
+# =====
 
 @async while true
     if isready(rx)

@@ -3,15 +3,6 @@
 # enable distrbuted computing
 using Distributed
 
-# activating logging
-# see: https://discourse.julialang.org/t/how-to-save-logging-output-to-a-log-file/14004/5
-#using Logging
-#io = open("log_master.txt", "w+")
-#logger = SimpleLogger(io)
-#global_logger(logger)
-
-# this should be the next step.
-# in the future we will run the tasks in different containers.
 #addprocs(4)
 addprocs(4; exeflags=`--project=$(Base.active_project())`)
 p = 3 # invoicing (orders/bankstatements)
@@ -28,12 +19,7 @@ include("./api/myfunctions_pids.jl")
 # start dispatcher
 rx = dispatcher()
 
-# Processing the orders
-#=
-orders = AppliSales.process()
-put!(rx, orders)
-=#
-
+# start application
 put!(rx, "START")
 
 # processing the uppaid invoices
@@ -43,9 +29,3 @@ put!(rx, stms)
 # unkown type
 test = "Test unkown type"
 put!(rx, test)
-
-# write otput to log_master.txt
-#flush(io)
-
-#stm = `rm invoicing.sqlite ledger.sqlite`
-#run(stm)

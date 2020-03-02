@@ -1,4 +1,4 @@
-# test_remote_channels.jl
+# test_local_channels.jl
 
 # enable distrbuted computing
 using Distributed
@@ -14,16 +14,14 @@ np = addprocs(4; exeflags=`--project=$(Base.active_project())`)
     using AppliSales
     using AppliGeneralLedger
     using AppliInvoicing
-end
+end;
 
 @info("Enabled distributed computing")
 # get tasks and dispatcher
 include("./api/myfunctions.jl");
 @info("Loaded ./api/myfunctions.jl")
 
-
-
-@info("running test_remote_channel.jl")
+@info("running test_local_channel.jl")
 
 # start dispatcher
 rx = dispatcher()

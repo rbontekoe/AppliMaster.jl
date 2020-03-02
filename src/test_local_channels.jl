@@ -5,7 +5,6 @@ using Distributed
 @info("Enabled distributed computing")
 
 # this should be the next step
-#np = addprocs(4)
 np = addprocs(4; exeflags=`--project=$(Base.active_project())`)
 @info("number of processes is $(length(np))")
 
@@ -16,31 +15,28 @@ np = addprocs(4; exeflags=`--project=$(Base.active_project())`)
     using AppliInvoicing
 end;
 
-@info("Enabled distributed computing")
-# get tasks and dispatcher
+@info("Distributed computing enabled")
+
+# get the tasks and dispatcher
 include("./api/myfunctions.jl");
 @info("Loaded ./api/myfunctions.jl")
 
-@info("running test_local_channel.jl")
-
-# start dispatcher
+# start the dispatcher
 rx = dispatcher()
 @info("Dispatcher started")
 
-#runcode(channel) = begin
 # start the application
 @info("The Master will start the process and asks for test orders from the AppliSales module")
 put!(rx, "START")
 
-# processing the uppaid invoices
-#@info("Master will read file with 2 bank statements")
+# process payments
 stms = AppliInvoicing.read_bank_statements(PATH_CSV)
 
 @info("Master got $(length(stms)) bank statements")
 @info("Master will put $(length(stms)) bank statements on rx channel")
 put!(rx, stms)
 
-#unkown type
+# unkown data type
 test = "Test unkown type"
 put!(rx, test)
 #end

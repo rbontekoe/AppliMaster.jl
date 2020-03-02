@@ -8,23 +8,23 @@ const PATH_JOURNAL = "journal.txt"
 const PATH_LEDGER = "ledger.txt"
 
 # =================================
-# task_1 - processing orders
+# task_0 - processing orders
 # =================================
-function task_master(rx)
+function task_0(rx)
     tx = Channel(32)
     @async while true
         if isready(tx)
             start = take!(tx)
-            @info("task_master received $(typeof(start))")
+            @info("task_0 (master): $(typeof(start))")
             if start == "START"
-                @info("task_master will start the process remotely")
+                @info("task_0 (master) will start the process")
                 orders = @fetch AppliSales.process()
-                @info("task_master will put $(length(orders)) the orders on rx channel")
+                @info("task_0 (master) will put $(length(orders)) the orders on rx channel")
                 put!(rx, orders)
-                @info("task_master has putted $(length(orders)) the orders on rx channel")
+                @info("task_0 (master) has putted $(length(orders)) the orders on rx channel")
             end
         else
-            @info("task_master is waiting for data")
+            @info("task_0 (master) is waiting for data")
             wait(tx)
         end
     end
@@ -34,20 +34,20 @@ end # test_0
 # =================================
 # task_1 - processing orders
 # =================================
-function task_invoicing_unpaid(rx)
+function task_1(rx)
     tx = Channel(32)
     @async while true
         if isready(tx)
             orders = take!(tx)
-            @info("task_invoicing_unpaid received $(typeof(orders))")
+            @info("task 1 (create invoices): $(typeof(orders))")
             if typeof(orders) == Array{AppliSales.Order, 1}
-                @info("task_invoicing_unpaid will process $(length(orders)) orders remotely")
+                @info("task_1 (create invoices) will process $(length(orders)) orders remotely")
                 result = @fetch AppliInvoicing.process(PATH_DB, orders)
-                @info("task_invoicing_unpaid will put $(length(result)) journal entries on rx channel")
+                @info("task_1 (create invoices) will put $(length(result)) journal entries on rx channel")
                 put!(rx, result)
             end
         else
-            @info("task_invoicing_unpaid is waiting for data")
+            @info("task_1 (create invoices) is waiting for data")
             wait(tx)
         end
     end
@@ -57,21 +57,21 @@ end # test_1
 # =================================
 # task_2 - process journal entries
 # =================================
-function task_general_ledger(rx)
+function task_2(rx)
     tx = Channel(32)
     @async while true
         if isready(tx)
             entries = take!(tx)
-            @info("task_general_ledger received $(typeof(entries))")
+            @info("task_2 (general_ledger): $(typeof(entries))")
             if typeof(entries) == Array{AppliGeneralLedger.JournalEntry,1}
-                @info("task_general_ledger will process $(length(entries)) journal entries remotely")
+                @info("task_2 (general_ledger) will process $(length(entries)) journal entries remotely")
                 result = @fetch AppliGeneralLedger.process(PATH_JOURNAL, PATH_LEDGER, entries)
                 #@info("task_general_ledger saved $(length(result)) journal entries")
-                @info("task_general_ledger saved the journal entries")
+                @info("task_2 (general_ledger) saved the journal entries")
                 #put!(tx, result)
             end
         else
-            @info("task_general_ledger is waiting for data")
+            @info("task_2 (general ledger) is waiting for data")
             wait(tx)
         end
     end
@@ -81,23 +81,23 @@ end # test_2
 # =================================
 # task_3 - get paid journal entries
 # =================================
-function task_invoicing_paid(rx)
+function task_3(rx)
     tx = Channel(32)
     @async while true
         if isready(tx)
             stms = take!(tx)
-            @info("task_invoicing_paid received $(typeof(stms))")
+            @info("task_3 (process payments): $(typeof(stms))")
             if typeof(stms) == Array{AppliInvoicing.BankStatement,1}
-                @info("task_invoicing_paid will match unpaid invoices with bank statements")
+                @info("task_3 (process payments) will match unpaid invoices with bank statements")
                 result = @fetch begin
                     unpaid_invoices = retrieve_unpaid_invoices(PATH_DB)
                     AppliInvoicing.process(PATH_DB, unpaid_invoices, stms)
                 end
-                @info("task_invoicing_paid will put $(length(result)) journal entries on rx channel")
+                @info("task_3 (process payments) will put $(length(result)) journal entries on rx channel")
                 put!(rx, result)
             end
         else
-            @info("task_invoicing_paid is waiting for data")
+            @info("task_3 (process payments) is waiting for data")
             wait(tx)
         end
     end
@@ -112,10 +112,10 @@ end # test_3
 function dispatcher()
     rx = Channel(32)
 
-    tx0 = task_master(rx) # get the orders
-    tx1 = task_invoicing_unpaid(rx) # process the orders
-    tx2 = task_general_ledger(rx) # process the journal entries
-    tx3 = task_invoicing_paid(rx) # process the unpaid invoices
+    tx0 = task_0(rx) # get the orders
+    tx1 = task_1(rx) # process the orders
+    tx2 = task_2(rx) # process the journal entries
+    tx3 = task_3(rx) # process the unpaid invoices
 
     @async while true
         if isready(rx)

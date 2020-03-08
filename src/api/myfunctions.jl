@@ -8,7 +8,7 @@ const PATH_JOURNAL = "journal.txt"
 const PATH_LEDGER = "ledger.txt"
 
 # =================================
-# task_0 - processing orders
+# task_0 - get orders from Sales
 # =================================
 function task_0(rx)
     tx = Channel(32)
@@ -29,30 +29,30 @@ function task_0(rx)
         end
     end
     return tx
-end # test_0
+end # task_0
 
 # =================================
-# task_1 - processing orders
+# task_1 - process the orders
 # =================================
 function task_1(rx)
     tx = Channel(32)
     @async while true
         if isready(tx)
             orders = take!(tx)
-            @info("task 1 (create invoices): $(typeof(orders))")
+            @info("task 1 (process the orders): $(typeof(orders))")
             if typeof(orders) == Array{AppliSales.Order, 1}
-                @info("task_1 (create invoices) will process $(length(orders)) orders remotely")
+                @info("task_1 (process the orders) will process $(length(orders)) orders remotely")
                 result = @fetch AppliInvoicing.process(PATH_DB, orders)
-                @info("task_1 (create invoices) will put $(length(result)) journal entries on rx channel")
+                @info("task_1 (process the orders) will put $(length(result)) journal entries on rx channel")
                 put!(rx, result)
             end
         else
-            @info("task_1 (create invoices) is waiting for data")
+            @info("task_1 (process the orders) is waiting for data")
             wait(tx)
         end
     end
     return tx
-end # test_1
+end # task_1
 
 # =================================
 # task_2 - process journal entries
@@ -62,24 +62,24 @@ function task_2(rx)
     @async while true
         if isready(tx)
             entries = take!(tx)
-            @info("task_2 (general_ledger): $(typeof(entries))")
+            @info("task_2 (process journal entries): $(typeof(entries))")
             if typeof(entries) == Array{AppliGeneralLedger.JournalEntry,1}
-                @info("task_2 (general_ledger) will process $(length(entries)) journal entries remotely")
+                @info("task_2 (process journal entries) will process $(length(entries)) journal entries remotely")
                 result = @fetch AppliGeneralLedger.process(PATH_JOURNAL, PATH_LEDGER, entries)
                 #@info("task_general_ledger saved $(length(result)) journal entries")
-                @info("task_2 (general_ledger) saved the journal entries")
+                @info("task_2 (process journal entries) saved the journal entries")
                 #put!(tx, result)
             end
         else
-            @info("task_2 (general ledger) is waiting for data")
+            @info("task_2 (process journal entries) is waiting for data")
             wait(tx)
         end
     end
     return tx
-end # test_2
+end # task2_2
 
 # =================================
-# task_3 - get paid journal entries
+# task_3 - process payments
 # =================================
 function task_3(rx)
     tx = Channel(32)
@@ -102,7 +102,7 @@ function task_3(rx)
         end
     end
     return tx
-end # test_3
+end # task_3
 
 
 
@@ -112,7 +112,8 @@ end # test_3
 function dispatcher()
     rx = Channel(32)
 
-    tx0 = task_0(rx) # get the orders
+    # instantiate tasks
+    tx0 = task_0(rx) # get orders from Sales
     tx1 = task_1(rx) # process the orders
     tx2 = task_2(rx) # process the journal entries
     tx3 = task_3(rx) # process the unpaid invoices

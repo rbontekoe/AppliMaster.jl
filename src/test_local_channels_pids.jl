@@ -4,9 +4,9 @@
 using Distributed
 
 #addprocs(4)
-addprocs(4; exeflags=`--project=$(Base.active_project())`)
-p = 3 # invoicing (orders/bankstatements)
-q = 4 # general ledger
+addprocs([("rob@172.17.0.2", 1), ("rob@172.17.0.3", 1)]; exeflags=`--project=$(Base.active_project())`)
+p = 2 # invoicing (orders/bankstatements)
+q = 3 # general ledger
 
 # activate the packages
 @everywhere using AppliSales

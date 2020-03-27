@@ -24,3 +24,4 @@ println("Sales is $balance_8000. Should be 4000.0")
 stm = `rm invoicing.sqlite ledger.txt journal.txt`
 
 run(stm)
+# end

@@ -1,5 +1,7 @@
 # test.jl
 
+push!(LOAD_PATH, "/home/rob/julia-projects/tc/AppliInvoicing")
+
 using AppliSales
 using AppliGeneralLedger
 using AppliInvoicing

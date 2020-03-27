@@ -1,5 +1,9 @@
 # test_local_channels.jl
 
+# remove old stuff
+stm = `rm invoicing.sqlite ledger.txt journal.txt`
+run(stm)
+
 # enable distrbuted computing
 using Distributed
 @info("Enabled distributed computing")
@@ -7,6 +11,9 @@ using Distributed
 # this should be the next step
 np = addprocs(4; exeflags=`--project=$(Base.active_project())`)
 @info("number of processes is $(length(np))")
+
+# define local path fot AppliInvoicing
+@everywhere push!(LOAD_PATH, "/home/rob/julia-projects/tc/AppliInvoicing")
 
 # activate the packages (before the processes are created)
 @everywhere begin
@@ -18,8 +25,9 @@ end;
 @info("Distributed computing enabled")
 
 # get the tasks and dispatcher
-include("./api/myfunctions.jl");
-@info("Loaded ./api/myfunctions.jl")
+include("./api/api.jl")
+#include("./api/myfunctions2.jl");
+#@info("Loaded ./api/myfunctions2.jl")using AppliSales: process
 
 # start the dispatcher
 rx = dispatcher()

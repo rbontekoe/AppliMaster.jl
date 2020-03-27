@@ -1,4 +1,4 @@
-# myfunctions.jl
+# myfunctions2.jl
 
 using Distributed
 
@@ -118,21 +118,19 @@ function dispatcher()
     tx2 = task_2(rx) # process the journal entries
     tx3 = task_3(rx) # process the unpaid invoices
 
+    # definition Holy traits pattern Dispatcher in domain.jl
+    dispatch(x::T) where {T} = dispatch(Dispatcher(T), x)
+
+    dispatch(::T0, x) = put!(tx0, x)
+    dispatch(::T1, x) = put!(tx1, x)
+    dispatch(::T2, x) = put!(tx2, x)
+    dispatch(::T3, x) = put!(tx3, x)
+
     @async while true
         if isready(rx)
             value = take!(rx)
             @info("Dispatcher received $(typeof(value))")
-            if value isa String && value =="START"
-                put!(tx0, "START")
-            elseif value isa Array{AppliSales.Order, 1}
-                put!(tx1, value)
-            elseif value isa Array{AppliGeneralLedger.JournalEntry,1}
-                put!(tx2, value)
-            elseif value isa Array{AppliInvoicing.BankStatement,1}
-                put!(tx3, value)
-            else
-                @warn("No task found for type $(typeof(value))")
-            end
+            dispatch(value)
         else
             wait(rx)
         end

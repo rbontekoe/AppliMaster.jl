@@ -4,6 +4,13 @@
 stm = `rm invoicing.sqlite ledger.txt journal.txt`
 run(stm)
 
+# activateing logging
+# see: https://discourse.julialang.org/t/how-to-save-logging-output-to-a-log-file/14004/5
+using Logging
+io = open("log_master.txt", "w+")
+logger = SimpleLogger(io)
+global_logger(logger)
+
 # enable distrbuted computing
 using Distributed
 @info("Enabled distributed computing")
@@ -48,3 +55,6 @@ put!(rx, stms)
 test = "Test unkown type"
 put!(rx, test)
 #end
+
+# cleanup
+flush(io)

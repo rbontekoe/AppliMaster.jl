@@ -1,19 +1,21 @@
 # test_local_channels.jl
 
 # remove old stuff
-stm = `rm invoicing.sqlite ledger.txt journal.txt`
-run(stm)
+cmd = `rm test_invoicing.sqlite test_ledger.txt test_journal.txt`
+run(cmd)
 
 # activateing logging
 # see: https://discourse.julialang.org/t/how-to-save-logging-output-to-a-log-file/14004/5
+#=
 using Logging
 io = open("log_master.txt", "w+")
 logger = SimpleLogger(io)
 global_logger(logger)
+=#
 
 # enable distrbuted computing
 using Distributed
-@info("Enabled distributed computing")
+@info("Enable distributed computing")
 
 # this should be the next step
 np = addprocs(4; exeflags=`--project=$(Base.active_project())`)
@@ -45,7 +47,7 @@ rx = dispatcher()
 put!(rx, "START")
 
 # process payments
-stms = AppliInvoicing.read_bank_statements(PATH_CSV)
+stms = AppliInvoicing.read_bank_statements("./bank.csv")
 
 @info("Master got $(length(stms)) bank statements")
 @info("Master will put $(length(stms)) bank statements on rx channel")
@@ -56,5 +58,11 @@ test = "Test unkown type"
 put!(rx, test)
 #end
 
+# aging report
+using DataFrames
+r = DataFrame(report(;path=PATH_DB))
+println("\nUnpaid invoices\n============")
+println(r)
+
 # cleanup
-flush(io)
+#flush(io)

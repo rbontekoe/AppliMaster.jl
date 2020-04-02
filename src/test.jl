@@ -13,7 +13,7 @@ using AppliInvoicing
 #logger = SimpleLogger(io)
 #global_logger(logger)
 
-const PATH_DB = "./invoicing.sqlite"
+#const PATH_DB = "./invoicing.sqlite"
 
 const PATH_CSV = "./bank.csv"
 
@@ -21,18 +21,18 @@ const PATH_CSV = "./bank.csv"
 orders = AppliSales.process()
 @info("Received $(length(orders)) orders from AppliSales.")
 
-journal_entries_1 = AppliInvoicing.process(PATH_DB, orders)
+journal_entries_1 = AppliInvoicing.process(orders; path="./test_invoicing.sqlite")
 @info("Saved unpaid invoices, and created $(length(journal_entries_1)) journal entries of it.")
 
 # get Bank statemnets and unpaid invoices
 stms = AppliInvoicing.read_bank_statements(PATH_CSV)
 
-unpaid_invoices = retrieve_unpaid_invoices(PATH_DB)
+unpaid_invoices = retrieve_unpaid_invoices()
 
 @info("Read bankstatements and retrieved unpaid invoices.")
 
 # process unpaid invoices and bank staements
-journal_entries_2 = AppliInvoicing.process(PATH_DB, unpaid_invoices, stms)
+journal_entries_2 = AppliInvoicing.process(unpaid_invoices, stms; path=PATH_DB)
 @info("Saved paid invoices and created $(length(journal_entries_2)) journal entries of it.")
 
 # =============================
@@ -42,16 +42,16 @@ journal_entries_2 = AppliInvoicing.process(PATH_DB, unpaid_invoices, stms)
 const PATH_DB_LEDGER = "./ledger.txt"
 const PATH_DB_JOURNAL = "./journal.txt"
 
-AppliGeneralLedger.process(PATH_DB_JOURNAL, PATH_DB_LEDGER, journal_entries_1)
+AppliGeneralLedger.process(journal_entries_1)
 @info("Processed unpaid journal entries")
 
 # process journal entries
 
-AppliGeneralLedger.process(PATH_DB_JOURNAL, PATH_DB_LEDGER, journal_entries_2)
+AppliGeneralLedger.process(journal_entries_2)
 @info("Processed paid journal entries")
 
 # read all general ledger accounts
-r = AppliGeneralLedger.read_from_file(PATH_DB_LEDGER)
+r = AppliGeneralLedger.read_from_file("./test_ledger.txt")
 
 using DataFrames
 
@@ -78,6 +78,6 @@ println("Sales: € $sales")
 # cleanup
 #flush(io)
 
-stm = `rm invoicing.sqlite ledger.txt journal.txt`
+stm = `rm invoicing.sqlite test_ledger.txt test_journal.txt`
 
 run(stm)

@@ -1,5 +1,10 @@
 # test_remote_channels_pids.jl
 
+# remove old stuff
+cmd = `rm invoicing.sqlite ledger.txt journal.txt`
+run(cmd)
+
+
 # enable distrbuted computing
 using Distributed
 
@@ -7,6 +12,9 @@ using Distributed
 addprocs([("rob@172.17.0.2", 1), ("rob@172.17.0.3", 1)]; exeflags=`--project=$(Base.active_project())`)
 p = 2 # invoicing (orders/bankstatements)
 q = 3 # general ledger
+
+# define local path fot AppliInvoicing
+@everywhere push!(LOAD_PATH, "/home/rob/julia-projects/tc/AppliInvoicing")
 
 # activate the packages
 @everywhere using AppliSales

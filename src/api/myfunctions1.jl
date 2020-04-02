@@ -1,11 +1,11 @@
-# myfunctions.jl
+# myfunctions2.jl
 
 using Distributed
 
 const PATH_DB = "./invoicing.sqlite"
 const PATH_CSV = "./bank.csv"
-const PATH_JOURNAL = "journal.txt"
-const PATH_LEDGER = "ledger.txt"
+const PATH_JOURNAL = "./journal.txt"
+const PATH_LEDGER = "./ledger.txt"
 
 # =================================
 # task_0 - get orders from Sales
@@ -40,9 +40,10 @@ function task_1(rx)
         if isready(tx)
             orders = take!(tx)
             @info("task 1 (process the orders): $(typeof(orders))")
-            if typeof(orders) == Array{AppliSales.Order, 1}
+            #if typeof(orders) == Array{AppliSales.Order, 1}
+            if orders isa Array{AppliSales.Order, 1}
                 @info("task_1 (process the orders) will process $(length(orders)) orders remotely")
-                result = @fetch AppliInvoicing.process(PATH_DB, orders)
+                result = @fetch AppliInvoicing.process(orders; path=PATH_DB)
                 @info("task_1 (process the orders) will put $(length(result)) journal entries on rx channel")
                 put!(rx, result)
             end
@@ -63,9 +64,10 @@ function task_2(rx)
         if isready(tx)
             entries = take!(tx)
             @info("task_2 (process journal entries): $(typeof(entries))")
-            if typeof(entries) == Array{AppliGeneralLedger.JournalEntry,1}
+            #if typeof(entries) == Array{AppliGeneralLedger.JournalEntry,1}
+            if entries isa Array{AppliGeneralLedger.JournalEntry,1}
                 @info("task_2 (process journal entries) will process $(length(entries)) journal entries remotely")
-                result = @fetch AppliGeneralLedger.process(PATH_JOURNAL, PATH_LEDGER, entries)
+                result = @fetch AppliGeneralLedger.process(entries; path_journal=PATH_JOURNAL, path_ledger=PATH_LEDGER)
                 #@info("task_general_ledger saved $(length(result)) journal entries")
                 @info("task_2 (process journal entries) saved the journal entries")
                 #put!(tx, result)
@@ -87,11 +89,12 @@ function task_3(rx)
         if isready(tx)
             stms = take!(tx)
             @info("task_3 (process payments): $(typeof(stms))")
-            if typeof(stms) == Array{AppliInvoicing.BankStatement,1}
+            #if typeof(stms) == Array{AppliInvoicing.BankStatement,1}
+            if stms isa Array{AppliInvoicing.BankStatement,1}
                 @info("task_3 (process payments) will match unpaid invoices with bank statements")
                 result = @fetch begin
-                    unpaid_invoices = retrieve_unpaid_invoices(PATH_DB)
-                    AppliInvoicing.process(PATH_DB, unpaid_invoices, stms)
+                    unpaid_invoices = retrieve_unpaid_invoices(;path=PATH_DB)
+                    AppliInvoicing.process(unpaid_invoices, stms; path=PATH_DB)
                 end
                 @info("task_3 (process payments) will put $(length(result)) journal entries on rx channel")
                 put!(rx, result)
@@ -118,21 +121,19 @@ function dispatcher()
     tx2 = task_2(rx) # process the journal entries
     tx3 = task_3(rx) # process the unpaid invoices
 
+    # definition Holy traits pattern Dispatcher in domain.jl
+    dispatch(x::T) where {T} = dispatch(Dispatcher(T), x)
+
+    dispatch(::T0, x) = put!(tx0, x)
+    dispatch(::T1, x) = put!(tx1, x)
+    dispatch(::T2, x) = put!(tx2, x)
+    dispatch(::T3, x) = put!(tx3, x)
+
     @async while true
         if isready(rx)
             value = take!(rx)
             @info("Dispatcher received $(typeof(value))")
-            if value isa String && value =="START"
-                put!(tx0, "START")
-            elseif value isa Array{AppliSales.Order, 1}
-                put!(tx1, value)
-            elseif value isa Array{AppliGeneralLedger.JournalEntry,1}
-                put!(tx2, value)
-            elseif value isa Array{AppliInvoicing.BankStatement,1}
-                put!(tx3, value)
-            else
-                @warn("No task found for type $(typeof(value))")
-            end
+            dispatch(value)
         else
             wait(rx)
         end

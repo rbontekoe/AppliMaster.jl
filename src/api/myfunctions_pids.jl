@@ -41,7 +41,7 @@ function task_1(rx, pid)
             orders = take!(tx)
             if typeof(orders) == Array{AppliSales.Order, 1}
                 @info("task_1: Processing orders")
-                result = @fetchfrom pid AppliInvoicing.process(PATH_DB, orders)
+                result = @fetchfrom pid AppliInvoicing.process(orders; path=PATH_DB)
                 @info("Task 1 will put $(length(result)) orders on rx channel")
                 put!(rx, result)
             end
@@ -90,9 +90,9 @@ function task_3(rx, pid)
             if typeof(stms) == Array{AppliInvoicing.BankStatement,1}
                 @info("Task_3: Processing unpaid invoices")
                 result = @fetchfrom pid begin
-                    unpaid_invoices = retrieve_unpaid_invoices(PATH_DB)
+                    unpaid_invoices = retrieve_unpaid_invoices(path=PATH_DB)
                     @info("Retrieved $(length(unpaid_invoices)) unpaid invoices")
-                    AppliInvoicing.process(PATH_DB, unpaid_invoices, stms)
+                    AppliInvoicing.process(unpaid_invoices, stms; path=PATH_DB)
                 end
                 put!(rx, result)
             end

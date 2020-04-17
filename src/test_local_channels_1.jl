@@ -19,10 +19,11 @@ using Distributed
 
 # this should be the next step
 np = addprocs(4; exeflags=`--project=$(Base.active_project())`)
+#np = addprocs([("rob@192.168.2.77:2222", :auto)]; exeflags=`--project=$(Base.active_project())`)
 @info("number of processes is $(length(np))")
 
 # define local path fot AppliInvoicing
-@everywhere push!(LOAD_PATH, "/home/rob/julia-projects/tc/AppliInvoicing")
+#@everywhere push!(LOAD_PATH, "/home/rob/julia-projects/tc/AppliInvoicing")
 
 # activate the packages (before the processes are created)
 @everywhere begin
@@ -46,6 +47,7 @@ rx = dispatcher()
 @info("The Master will start the process and asks for test orders from the AppliSales module")
 put!(rx, "START")
 
+
 # process payments
 stms = AppliInvoicing.read_bank_statements("./bank.csv")
 
@@ -60,7 +62,7 @@ put!(rx, test)
 
 # aging report
 using DataFrames
-r = DataFrame(report(;path=PATH_DB))
+r = DataFrame(report())
 println("\nUnpaid invoices\n============")
 println(r)
 

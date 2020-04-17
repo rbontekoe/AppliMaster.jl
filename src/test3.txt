@@ -1,0 +1,42 @@
+using Distributed
+
+addprocs([("rob@192.168.2.77:2222", :auto)]; tunnel=true)
+
+# ===============
+https://raspberrypi.stackexchange.com/questions/81570/installing-rpi-gpio-on-ubuntu-core
+
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install python-pip python-dev
+sudo pip install RPi.GPIO
+
+https://blog.ubiquityrobotics.com/post/raspberry-pi-cam/
+
+https://ubuntu.com/blog/getting-started-with-ubuntu-core-streaming-video-from-a-raspberry-pi
+
+
+# =================
+
+julia> using Sockets
+
+julia> @async begin
+    server = listen(IPv4(0), 8000) # IPv4(0) essential when running on another machine
+    while true
+        sock = accept(server)
+        @async while isopen(sock)
+            write(sock, uppercase(readline(sock, keep=true)))
+        end
+    end
+end
+
+# client
+
+julia> using Sockets
+
+julia> clientside = connect("rob-lenovo-y520-15ikbn.home", 8000)
+
+julia> @async while isopen(clientside)
+            write(stdout, readline(clientside, keep=true))
+        end
+
+julia> println(clientside,"Hello World from the Echo Server")

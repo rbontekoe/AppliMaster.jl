@@ -2,6 +2,8 @@
 
 using Distributed
 
+using Serialization
+
 #const PATH_DB = "./test_invoicing.sqlite"
 #const PATH_CSV = "./bank.csv"
 #const PATH_JOURNAL = "test_journal.txt"
@@ -15,7 +17,7 @@ function task_0(rx)
     @async while true
         if isready(tx)
             start = take!(tx)
-            @info("task_0 (master): $(typeof(start))")
+            @info("task_0 (master): $(typeof(start)) - $start - $(start == "START")")
             if start == "START"
                 @info("task_0 (master) will start the process")
                 orders = @fetch AppliSales.process()
@@ -40,7 +42,6 @@ function task_1(rx)
         if isready(tx)
             orders = take!(tx)
             @info("task 1 (process the orders): $(typeof(orders))")
-            #if typeof(orders) == Array{AppliSales.Order, 1}
             if orders isa Array{AppliSales.Order, 1}
                 @info("task_1 (process the orders) will process $(length(orders)) orders remotely")
                 result = @fetch AppliInvoicing.process(orders)
@@ -64,7 +65,6 @@ function task_2(rx)
         if isready(tx)
             entries = take!(tx)
             @info("task_2 (process journal entries): $(typeof(entries))")
-            #if typeof(entries) == Array{AppliGeneralLedger.JournalEntry,1}
             if entries isa Array{AppliGeneralLedger.JournalEntry,1}
                 @info("task_2 (process journal entries) will process $(length(entries)) journal entries remotely")
                 result = @fetch AppliGeneralLedger.process(entries)
@@ -89,7 +89,6 @@ function task_3(rx)
         if isready(tx)
             stms = take!(tx)
             @info("task_3 (process payments): $(typeof(stms))")
-            #if typeof(stms) == Array{AppliInvoicing.BankStatement,1}
             if stms isa Array{AppliInvoicing.BankStatement,1}
                 @info("task_3 (process payments) will match unpaid invoices with bank statements")
                 result = @fetch begin
@@ -107,7 +106,21 @@ function task_3(rx)
     return tx
 end # task_3
 
-
+# =================================
+# task_4 - process payments
+# =================================
+function task_4(rx)
+    #tx = Channel(24)
+    server = listen(IPv4(0), 8000)
+    @info("task_4 - Start socket listener")
+    @async while true
+        sock = accept(server)
+        @async while isopen(sock)
+            #put!(rx, readline(sock, keep=true))
+            put!(rx, deserialize(sock))
+        end
+    end
+end # testk_4
 
 # =================================
 # task dispatcher
@@ -120,6 +133,7 @@ function dispatcher()
     tx1 = task_1(rx) # process the orders
     tx2 = task_2(rx) # process the journal entries
     tx3 = task_3(rx) # process the unpaid invoices
+    task_4(rx)
 
     # definition Holy traits pattern Dispatcher in domain.jl
     dispatch(x::T) where {T} = dispatch(Dispatcher(T), x)
@@ -128,6 +142,7 @@ function dispatcher()
     dispatch(::T1, x) = put!(tx1, x)
     dispatch(::T2, x) = put!(tx2, x)
     dispatch(::T3, x) = put!(tx3, x)
+    # dispatch(::T4, x) = put!(tx0, x)
 
     @async while true
         if isready(rx)
@@ -140,3 +155,5 @@ function dispatcher()
     end
     return rx
 end # dispatcher
+
+using Sockets

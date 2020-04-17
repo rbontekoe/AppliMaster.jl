@@ -9,7 +9,10 @@ run(cmd)
 using Distributed
 
 #addprocs(4)
+#addprocs([("rob@172.17.0.2", 1), ("rob@172.17.0.3", 1)]; exeflags=`--project=$(Base.active_project())`)
 addprocs([("rob@172.17.0.2", 1), ("rob@172.17.0.3", 1)]; exeflags=`--project=$(Base.active_project())`)
+addprocs([("rob@192.168.2.77:2222", :auto)]; exeflags=`--project=$(Base.active_project())`)
+
 p = 2 # invoicing (orders/bankstatements)
 q = 3 # general ledger
 

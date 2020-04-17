@@ -6,7 +6,7 @@ using DataFrames
 
 using Query
 
-df = DataFrame(AppliGeneralLedger.read_from_file("ledger.txt"))
+df = DataFrame(AppliGeneralLedger.read_from_file("test_ledger.txt"))
 
 df2 = df |> @filter(_.accountid == 1300) |> DataFrame
 

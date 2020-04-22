@@ -1,0 +1,5 @@
+[deps]
+AppliGeneralLedger = "091d2eb8-05c7-423c-82de-26b9e68923ef"
+AppliInvoicing = "3941c6da-33b5-11ea-2884-afa98fed5e3b"
+AppliSales = "a1ddd20a-2e39-11ea-38f9-6b919ef027c3"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"

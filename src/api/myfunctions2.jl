@@ -110,9 +110,8 @@ end # task_3
 # task_4 - process payments
 # =================================
 function task_4(rx)
-    #tx = Channel(24)
-    server = listen(IPv4(0), 8000)
     @info("task_4 - Start socket listener")
+    server = listen(IPv4(0), 8000)
     @async while true
         sock = accept(server)
         @async while isopen(sock)

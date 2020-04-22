@@ -1,5 +1,8 @@
 # test_local_channels.jl
 
+using Pkg
+Pkg.activate(".")
+
 # remove old stuff
 cmd = `rm test_invoicing.sqlite test_ledger.txt test_journal.txt`
 run(cmd)
@@ -29,11 +32,12 @@ include("./api/api.jl")
 rx = dispatcher()
 @info("Dispatcher started")
 
+# start remote
+include("client.jl")
+
 # aging report
 using DataFrames
+sleep(10)
 r = DataFrame(report())
 println("\nUnpaid invoices\n============")
 println(r)
-
-# cleanup
-#flush(io)

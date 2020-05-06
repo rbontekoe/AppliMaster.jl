@@ -44,7 +44,7 @@ function task_1(rx)
             @info("task 1 (process the orders): $(typeof(orders))")
             if orders isa Array{AppliSales.Order, 1}
                 @info("task_1 (process the orders) will process $(length(orders)) orders remotely")
-                result = @fetch AppliInvoicing.process(orders)
+                result = @fetch AppliAR.process(orders)
                 @info("task_1 (process the orders) will put $(length(result)) journal entries on rx channel")
                 put!(rx, result)
             end
@@ -89,11 +89,11 @@ function task_3(rx)
         if isready(tx)
             stms = take!(tx)
             @info("task_3 (process payments): $(typeof(stms))")
-            if stms isa Array{AppliInvoicing.BankStatement,1}
+            if stms isa Array{AppliAR.BankStatement,1}
                 @info("task_3 (process payments) will match unpaid invoices with bank statements")
                 result = @fetch begin
                     unpaid_invoices = retrieve_unpaid_invoices()
-                    AppliInvoicing.process(unpaid_invoices, stms)
+                    AppliAR.process(unpaid_invoices, stms)
                 end
                 @info("task_3 (process payments) will put $(length(result)) journal entries on rx channel")
                 put!(rx, result)

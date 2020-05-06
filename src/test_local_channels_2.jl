@@ -1,4 +1,4 @@
-# test_local_channels.jl
+# test_local_channels2.jl
 
 using Pkg
 Pkg.activate(".")
@@ -20,7 +20,7 @@ np = addprocs(4; exeflags=`--project=$(Base.active_project())`)
 @everywhere begin
     using AppliSales
     using AppliGeneralLedger
-    using AppliInvoicing
+    using AppliAR
 end;
 
 @info("Distributed computing enabled")
@@ -37,6 +37,7 @@ include("client.jl")
 
 # aging report
 using DataFrames
+
 sleep(10)
 r = DataFrame(report())
 println("\nUnpaid invoices\n============")

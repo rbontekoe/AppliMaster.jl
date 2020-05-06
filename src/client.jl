@@ -2,7 +2,6 @@
 
 using Sockets
 using Serialization
-using AppliGeneralLedger, AppliInvoicing
 
 io = connect("192.168.2.11", 8000)
 
@@ -10,6 +9,7 @@ io = connect("192.168.2.11", 8000)
 serialize(io, "START")
 
 # send bankstatemnet after a while
-sleep(60)
-stms = AppliInvoicing.read_bank_statements("./bank.csv")
+using AppliGeneralLedger, AppliAR
+sleep(30)
+stms = AppliAR.read_bank_statements("./bank.csv")
 serialize(io, stms)

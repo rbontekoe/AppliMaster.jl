@@ -2,15 +2,15 @@
 
 [[AppliAR]]
 deps = ["AppliGeneralLedger", "AppliSales", "CSV", "DataFrames", "Dates", "SQLite"]
-git-tree-sha1 = "e82c2e72609181fe85e5994b91dab3d0fd5adc95"
+git-tree-sha1 = "06437469e0380824b021ce4adf884fa5615e2693"
 repo-rev = "master"
 repo-url = "https://github.com/rbontekoe/AppliAR.jl"
 uuid = "1e47966d-b897-4632-ad62-7297852c51dd"
-version = "0.2.1"
+version = "0.2.2"
 
 [[AppliGeneralLedger]]
 deps = ["DataFrames", "Dates", "Serialization"]
-git-tree-sha1 = "e217d6418c8efdcc0e58e258117c93f5d809b413"
+git-tree-sha1 = "eee41293458450c4e376deeb5822f08023de3476"
 repo-rev = "master"
 repo-url = "https://github.com/rbontekoe/AppliGeneralLedger.jl"
 uuid = "69311175-8ceb-4e66-8d4a-fec439d19437"
@@ -18,11 +18,9 @@ version = "0.1.0"
 
 [[AppliSales]]
 deps = ["Dates"]
-git-tree-sha1 = "dd611cf3df66714b00836e98f34753b8774d54f2"
-repo-rev = "master"
-repo-url = "https://github.com/rbontekoe/AppliSales.jl"
+git-tree-sha1 = "f15f79205a29a8542d8b9b4f0ae7d468343d3d01"
 uuid = "c1345d04-1a7a-4e7a-b935-9916dcf58fca"
-version = "0.1.0"
+version = "0.1.2"
 
 [[Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -47,9 +45,9 @@ version = "0.7.7"
 
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
-git-tree-sha1 = "fecfed095803b86cc06fd7ee09d3d2c98fad4dac"
+git-tree-sha1 = "b0ae6133d365da2dbc88bc43d997b1b95c9df5f6"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "3.9.0"
+version = "3.9.1"
 
 [[DBInterface]]
 git-tree-sha1 = "baaf19c5be56abb6a7dc13f577378299eef06789"
@@ -154,9 +152,9 @@ version = "1.2.0"
 
 [[Parsers]]
 deps = ["Dates", "Test"]
-git-tree-sha1 = "f8f5d2d4b4b07342e5811d2b6428e45524e241df"
+git-tree-sha1 = "72c3451932513427caffbd8bab15643ad693804b"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "1.0.2"
+version = "1.0.3"
 
 [[Pkg]]
 deps = ["Dates", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Test", "UUIDs"]

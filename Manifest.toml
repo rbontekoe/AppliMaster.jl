@@ -2,7 +2,7 @@
 
 [[AppliAR]]
 deps = ["AppliGeneralLedger", "AppliSales", "CSV", "DataFrames", "Dates", "SQLite"]
-git-tree-sha1 = "06437469e0380824b021ce4adf884fa5615e2693"
+git-tree-sha1 = "d480abfdb6477687b19750f2a60fd52252ab3b6c"
 repo-rev = "master"
 repo-url = "https://github.com/rbontekoe/AppliAR.jl"
 uuid = "1e47966d-b897-4632-ad62-7297852c51dd"
@@ -11,8 +11,6 @@ version = "0.2.2"
 [[AppliGeneralLedger]]
 deps = ["DataFrames", "Dates", "Serialization"]
 git-tree-sha1 = "eee41293458450c4e376deeb5822f08023de3476"
-repo-rev = "master"
-repo-url = "https://github.com/rbontekoe/AppliGeneralLedger.jl"
 uuid = "69311175-8ceb-4e66-8d4a-fec439d19437"
 version = "0.1.0"
 

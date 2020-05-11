@@ -39,5 +39,5 @@ using DataFrames
 
 sleep(10)
 r = DataFrame(report())
-println("\nUnpaid invoices\n============")
+println("\nUnpaid invoices\n$("="^15)")
 println(r)

@@ -30,8 +30,8 @@ function task_0(rx)
             wait(tx)
         end
     end
-    return txputted
-end # task_0putted
+    return tx
+end # task_0
 
 # =================================
 # task_1 - process the orders

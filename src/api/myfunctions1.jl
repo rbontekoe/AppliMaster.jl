@@ -1,11 +1,11 @@
-# myfunctions2.jl
+# myfunctions1.jl
 
 using Distributed
 
-const PATH_DB = "./invoicing.sqlite"
+const PATH_DB = "./test2_invoicing.sqlite"
 const PATH_CSV = "./bank.csv"
-const PATH_JOURNAL = "./journal.txt"
-const PATH_LEDGER = "./ledger.txt"
+const PATH_JOURNAL = "./test2_journal.txt"
+const PATH_LEDGER = "./test2_ledger.txt"
 
 # =================================
 # task_0 - get orders from Sales
@@ -15,13 +15,13 @@ function task_0(rx)
     @async while true
         if isready(tx)
             start = take!(tx)
-            @info("task_0 (master): $(typeof(start))")
+            @info("task_0 (master): $(typeof(start)) - $start - $(start == "START")")
             if start == "START"
                 @info("task_0 (master) will start the process")
                 orders = @fetch AppliSales.process()
                 @info("task_0 (master) will put $(length(orders)) the orders on rx channel")
                 put!(rx, orders)
-                @info("task_0 (master) has putted $(length(orders)) the orders on rx channel")
+                @info("task_0 (master) has put $(length(orders)) the orders on rx channel")
             end
         else
             @info("task_0 (master) is waiting for data")
@@ -40,10 +40,9 @@ function task_1(rx)
         if isready(tx)
             orders = take!(tx)
             @info("task 1 (process the orders): $(typeof(orders))")
-            #if typeof(orders) == Array{AppliSales.Order, 1}
             if orders isa Array{AppliSales.Order, 1}
                 @info("task_1 (process the orders) will process $(length(orders)) orders remotely")
-                result = @fetch AppliInvoicing.process(orders; path=PATH_DB)
+                result = @fetch AppliAR.process(orders; path=PATH_DB)
                 @info("task_1 (process the orders) will put $(length(result)) journal entries on rx channel")
                 put!(rx, result)
             end
@@ -64,11 +63,9 @@ function task_2(rx)
         if isready(tx)
             entries = take!(tx)
             @info("task_2 (process journal entries): $(typeof(entries))")
-            #if typeof(entries) == Array{AppliGeneralLedger.JournalEntry,1}
             if entries isa Array{AppliGeneralLedger.JournalEntry,1}
                 @info("task_2 (process journal entries) will process $(length(entries)) journal entries remotely")
                 result = @fetch AppliGeneralLedger.process(entries; path_journal=PATH_JOURNAL, path_ledger=PATH_LEDGER)
-                #@info("task_general_ledger saved $(length(result)) journal entries")
                 @info("task_2 (process journal entries) saved the journal entries")
                 #put!(tx, result)
             end
@@ -89,12 +86,11 @@ function task_3(rx)
         if isready(tx)
             stms = take!(tx)
             @info("task_3 (process payments): $(typeof(stms))")
-            #if typeof(stms) == Array{AppliInvoicing.BankStatement,1}
-            if stms isa Array{AppliInvoicing.BankStatement,1}
+            if stms isa Array{AppliAR.BankStatement,1}
                 @info("task_3 (process payments) will match unpaid invoices with bank statements")
                 result = @fetch begin
-                    unpaid_invoices = retrieve_unpaid_invoices(;path=PATH_DB)
-                    AppliInvoicing.process(unpaid_invoices, stms; path=PATH_DB)
+                    unpaid_invoices = retrieve_unpaid_invoices(; path=PATH_DB)
+                    AppliAR.process(unpaid_invoices, stms; path=PATH_DB)
                 end
                 @info("task_3 (process payments) will put $(length(result)) journal entries on rx channel")
                 put!(rx, result)
@@ -106,8 +102,6 @@ function task_3(rx)
     end
     return tx
 end # task_3
-
-
 
 # =================================
 # task dispatcher
@@ -128,6 +122,7 @@ function dispatcher()
     dispatch(::T1, x) = put!(tx1, x)
     dispatch(::T2, x) = put!(tx2, x)
     dispatch(::T3, x) = put!(tx3, x)
+    # dispatch(::T4, x) = put!(tx0, x)
 
     @async while true
         if isready(rx)

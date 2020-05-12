@@ -41,3 +41,5 @@ sleep(10)
 r = DataFrame(report())
 println("\nUnpaid invoices\n$("="^15)")
 println(r)
+
+include("check_general_ledger.jl")

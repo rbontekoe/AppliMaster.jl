@@ -21,7 +21,7 @@ balance_8000 = sum(df2.credit - df2.debit)
 println("Sales is $balance_8000. Should be 4000.0")
 
 #stm = `rm invoicing.sqlite ledger.sqlite log_master.txt`
-stm = `rm invoicing.sqlite ledger.txt journal.txt`
+#stm = `rm invoicing.sqlite ledger.txt journal.txt`
 
-run(stm)
+#run(stm)
 # end

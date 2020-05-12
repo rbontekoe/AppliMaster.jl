@@ -5,9 +5,10 @@
 using Pkg
 Pkg.activate(".")
 
+
 # remove old stuff
-cmd = `rm test3_invoicing.sqlite test3_ledger.txt test3_journal.txt`
-run(cmd)
+#cmd = `rm test3_invoicing.sqlite test3_ledger.txt test3_journal.txt`
+#run(cmd)
 
 # start docker containers
 cmd = `docker start test_sshd`
@@ -22,12 +23,12 @@ run(cmd)
 # enable distrbuted computing
 using Distributed
 
-addprocs(4; exeflags=`--project=$(Base.active_project())`)
-#addprocs([("rob@172.17.0.2", 1), ("rob@172.17.0.3", 1)]; exeflags=`--project=$(Base.active_project())`)
+#addprocs(4; exeflags=`--project=$(Base.active_project())`)
+addprocs([("rob@172.17.0.2", 1), ("rob@172.17.0.3", 1)]; exeflags=`--project=$(Base.active_project())`)
 #addprocs([("rob@192.168.2.77:2222", :auto)]; exeflags=`--project=$(Base.active_project())`)
 
-p = 2 # accounts receivable (orders/bankstatements)
-q = 3 # general ledger
+p = 2 # general ledger
+q = 3 # accounts receivable (orders/bankstatements)
 
 # activate the packages
 @everywhere begin
@@ -53,8 +54,24 @@ put!(rx, stms)
 test = "Test unkown type"
 put!(rx, test)
 
-# aging report
+# print aging report
 using DataFrames
-r = DataFrame(report(;path=PATH_DB))
-println("\nUnpaid invoices\n============")
-println(r)
+r1 = @fetchfrom q AppliAR.report(;path=PATH_DB)
+result = DataFrame(r1)
+println("\nUnpaid invoices\n===============")
+println(result)
+
+# print general ledger
+r2 = @fetchfrom p AppliGeneralLedger.read_from_file(PATH_LEDGER)
+result2 = DataFrame(r2)
+println(result2)
+
+# open shell in container
+cmd = `ssh rob@172.17.0.2`
+run(cmd)
+# goto console, press Enter. Leave container with Ctrl-D
+
+# open shell in container
+cmd = `ssh rob@172.17.0.3`
+run(cmd)
+# goto console, press Enter. Leave container with Ctrl-D

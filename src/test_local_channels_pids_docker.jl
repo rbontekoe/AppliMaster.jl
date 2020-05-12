@@ -1,4 +1,4 @@
-# test_remote_channels_pids.jl
+# test_local_channels_pids.jl
 
 @info("NOT TESTED YET!!!")
 
@@ -6,7 +6,7 @@ using Pkg
 Pkg.activate(".")
 
 # remove old stuff
-cmd = `rm test2_invoicing.sqlite test2_ledger.txt test2_journal.txt`
+cmd = `rm test3_invoicing.sqlite test3_ledger.txt test3_journal.txt`
 run(cmd)
 
 # start docker containers
@@ -37,10 +37,10 @@ q = 3 # general ledger
 end;
 
 # get tasks
-include("./api/myfunctions_pids.jl")
+include("./api/api3.jl")
 
 # start dispatcher
-rx = dispatcher()
+rx = dispatcher(p, q)
 
 # start application
 put!(rx, "START")
@@ -52,3 +52,9 @@ put!(rx, stms)
 # unkown type
 test = "Test unkown type"
 put!(rx, test)
+
+# aging report
+using DataFrames
+r = DataFrame(report(;path=PATH_DB))
+println("\nUnpaid invoices\n============")
+println(r)

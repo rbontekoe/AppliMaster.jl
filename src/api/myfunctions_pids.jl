@@ -1,16 +1,16 @@
-# myfunctions1.jl
+# myfunctions_pids.jl
 
 using Distributed
 
-const PATH_DB = "./test2_invoicing.sqlite"
+const PATH_DB = "./test3_invoicing.sqlite"
 const PATH_CSV = "./bank.csv"
-const PATH_JOURNAL = "./test2_journal.txt"
-const PATH_LEDGER = "./test2_ledger.txt"
+const PATH_JOURNAL = "./test3_journal.txt"
+const PATH_LEDGER = "./test3_ledger.txt"
 
 # =================================
 # task_0 - get orders from Sales
 # =================================
-function task_0(rx)
+function task_0(rx, pid)
     tx = Channel(32)
     @async while true
         if isready(tx)
@@ -18,7 +18,7 @@ function task_0(rx)
             @info("task_0 (master): $(typeof(start)) - $start - $(start == "START")")
             if start == "START"
                 @info("task_0 (master) will start the process")
-                orders = @fetch AppliSales.process()
+                orders = @fetchfrom pid AppliSales.process()
                 @info("task_0 (master) will put $(length(orders)) the orders on rx channel")
                 put!(rx, orders)
                 @info("task_0 (master) has put $(length(orders)) the orders on rx channel")
@@ -34,7 +34,7 @@ end # task_0
 # =================================
 # task_1 - process the orders
 # =================================
-function task_1(rx)
+function task_1(rx, pid)
     tx = Channel(32)
     @async while true
         if isready(tx)
@@ -42,7 +42,7 @@ function task_1(rx)
             @info("task 1 (process the orders): $(typeof(orders))")
             if orders isa Array{AppliSales.Order, 1}
                 @info("task_1 (process the orders) will process $(length(orders)) orders remotely")
-                result = @fetch AppliAR.process(orders; path=PATH_DB)
+                result = @fetchfrom pid AppliAR.process(orders; path=PATH_DB)
                 @info("task_1 (process the orders) will put $(length(result)) journal entries on rx channel")
                 put!(rx, result)
             end
@@ -57,7 +57,7 @@ end # task_1
 # =================================
 # task_2 - process journal entries
 # =================================
-function task_2(rx)
+function task_2(rx, pid)
     tx = Channel(32)
     @async while true
         if isready(tx)
@@ -65,7 +65,7 @@ function task_2(rx)
             @info("task_2 (process journal entries): $(typeof(entries))")
             if entries isa Array{AppliGeneralLedger.JournalEntry,1}
                 @info("task_2 (process journal entries) will process $(length(entries)) journal entries remotely")
-                result = @fetch AppliGeneralLedger.process(entries; path_journal=PATH_JOURNAL, path_ledger=PATH_LEDGER)
+                result = @fetchfrom pid AppliGeneralLedger.process(entries; path_journal=PATH_JOURNAL, path_ledger=PATH_LEDGER)
                 @info("task_2 (process journal entries) saved the journal entries")
                 #put!(tx, result)
             end
@@ -80,7 +80,7 @@ end # task2_2
 # =================================
 # task_3 - process payments
 # =================================
-function task_3(rx)
+function task_3(rx, pid)
     tx = Channel(32)
     @async while true
         if isready(tx)
@@ -88,7 +88,7 @@ function task_3(rx)
             @info("task_3 (process payments): $(typeof(stms))")
             if stms isa Array{AppliAR.BankStatement,1}
                 @info("task_3 (process payments) will match unpaid invoices with bank statements")
-                result = @fetch begin
+                result = @fetchfrom pid begin
                     unpaid_invoices = retrieve_unpaid_invoices(; path=PATH_DB)
                     AppliAR.process(unpaid_invoices, stms; path=PATH_DB)
                 end
@@ -106,7 +106,7 @@ end # task_3
 # =================================
 # task dispatcher
 # =================================
-function dispatcher()
+function dispatcher(p, q)
     rx = Channel(32)
 
     # instantiate tasks

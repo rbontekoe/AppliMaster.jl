@@ -23,15 +23,15 @@ function task_0(rx)
                 orders = @fetch AppliSales.process()
                 @info("task_0 (master) will put $(length(orders)) the orders on rx channel")
                 put!(rx, orders)
-                @info("task_0 (master) has putted $(length(orders)) the orders on rx channel")
+                @info("task_0 (master) has put $(length(orders)) the orders on rx channel")
             end
         else
             @info("task_0 (master) is waiting for data")
             wait(tx)
         end
     end
-    return tx
-end # task_0
+    return txputted
+end # task_0putted
 
 # =================================
 # task_1 - process the orders

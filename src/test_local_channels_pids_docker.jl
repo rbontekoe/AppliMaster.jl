@@ -1,14 +1,9 @@
 # test_local_channels_pids.jl
 
-@info("NOT TESTED YET!!!")
+@info("NOT FULLY TESTED YET!!!")
 
 using Pkg
 Pkg.activate(".")
-
-
-# remove old stuff
-#cmd = `rm test3_invoicing.sqlite test3_ledger.txt test3_journal.txt`
-#run(cmd)
 
 # start docker containers
 cmd = `docker start test_sshd`
@@ -35,6 +30,7 @@ q = 3 # accounts receivable (orders/bankstatements)
     using AppliSales
     using AppliGeneralLedger
     using AppliAR
+    using Query
 end;
 
 # get tasks
@@ -48,6 +44,7 @@ put!(rx, "START")
 
 # processing the uppaid invoices
 stms = AppliAR.read_bank_statements(PATH_CSV)
+sleep(15)
 put!(rx, stms)
 
 # unkown type
@@ -59,19 +56,27 @@ using DataFrames
 r1 = @fetchfrom q AppliAR.report(;path=PATH_DB)
 result = DataFrame(r1)
 println("\nUnpaid invoices\n===============")
-println(result)
+show(result)
 
 # print general ledger
 r2 = @fetchfrom p AppliGeneralLedger.read_from_file(PATH_LEDGER)
-result2 = DataFrame(r2)
-println(result2)
+df = DataFrame(r2)
+println("\nGeneral Ledger mutations\n========================")
+show(df)
+
+df2 = r2 |> @filter(_.accountid == 1300) |> DataFrame
+println("\nAccounts receivable\n===================")
+show(df2)
+
+println("\nBalance Accounts Receivable: $(sum(df2.debit) - sum(df2.credit))")
 
 # open shell in container
 cmd = `ssh rob@172.17.0.2`
+@info("after run(cmd) is activated: goto console, press Enter, and rm test3_* files. Leave the container with Ctrl-D")
 run(cmd)
-# goto console, press Enter. Leave container with Ctrl-D
 
 # open shell in container
 cmd = `ssh rob@172.17.0.3`
+@info("after run(cmd) is activated: goto console, press Enter, and rm test3_invoicing.sqlite*. Leave the container with Ctrl-D")
 run(cmd)
-# goto console, press Enter. Leave container with Ctrl-D
+@info("Close julia with Ctrl-D")

@@ -3,6 +3,7 @@ AppliAR = "1e47966d-b897-4632-ad62-7297852c51dd"
 AppliGeneralLedger = "69311175-8ceb-4e66-8d4a-fec439d19437"
 AppliSales = "c1345d04-1a7a-4e7a-b935-9916dcf58fca"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Query = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
 
 [compat]
 AppliGeneralLedger = "0.1"

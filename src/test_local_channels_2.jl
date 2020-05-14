@@ -42,4 +42,5 @@ r = DataFrame(report())
 println("\nUnpaid invoices\n$("="^15)")
 println(r)
 
+println("")
 include("check_general_ledger.jl")

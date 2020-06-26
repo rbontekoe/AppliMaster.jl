@@ -1,7 +1,6 @@
 # test_local_channels2.jl
 
-using Pkg
-Pkg.activate(".")
+using Pkg; Pkg.activate(".")
 
 # remove old stuff
 cmd = `rm test_invoicing.sqlite test_ledger.txt test_journal.txt`

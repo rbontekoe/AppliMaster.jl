@@ -23,6 +23,7 @@ using Distributed
 
 #addprocs(4; exeflags=`--project=$(Base.active_project())`)
 addprocs([("rob@172.17.0.2", 1), ("rob@172.17.0.3", 1)]; exeflags=`--project=$(Base.active_project())`, tunnel=true, dir="/home/rob")
+
 #addprocs([("pi@192.168.2.3", 1)]; exename=`/home/pi/julia/julia-1.3.1/bin/julia`, dir="/home/pi")
 
 # remove processes > 3
@@ -62,7 +63,7 @@ put!(rx, test)
 
 # print aging report
 using DataFrames
-r1 = @fetchfrom ar_pid report(;path=PATH_DB)
+r1 = @fetchfrom ar_pid report(path_unpaid=PATH_DB, path_paid=PATH_DB_PAID)
 result = DataFrame(r1)
 println("\nUnpaid invoices\n===============")
 show(result)

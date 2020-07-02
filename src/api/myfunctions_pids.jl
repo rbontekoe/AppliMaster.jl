@@ -2,7 +2,8 @@
 
 using Distributed
 
-const PATH_DB = "./test3_invoicing.sqlite"
+const PATH_DB = "./test3_invoicing.txt"
+const PATH_DB_PAID = "./test3_invoicing_paid.txt"
 const PATH_CSV = "./bank.csv"
 const PATH_JOURNAL = "./test3_journal.txt"
 const PATH_LEDGER = "./test3_ledger.txt"
@@ -90,7 +91,11 @@ function task_3(rx, pid)
                 @info("task_3 (process payments) will match unpaid invoices with bank statements")
                 result = @fetchfrom pid begin
                     unpaid_invoices = retrieve_unpaid_invoices(; path=PATH_DB)
-                    AppliAR.process(unpaid_invoices, stms; path=PATH_DB)
+                    try
+                        AppliAR.process(unpaid_invoices, stms; path=PATH_DB_PAID)
+                    catch e
+                        @info(e)
+                    end
                 end
                 @info("task_3 (process payments) will put $(length(result)) journal entries on rx channel")
                 put!(rx, result)

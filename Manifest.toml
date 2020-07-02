@@ -1,12 +1,12 @@
 # This file is machine-generated - editing it directly is not advised
 
 [[AppliAR]]
-deps = ["AppliGeneralLedger", "AppliSales", "CSV", "DataFrames", "Dates", "SQLite"]
-git-tree-sha1 = "ec3413363416c52fabae916b6ce08ba48ac04cdb"
+deps = ["AppliGeneralLedger", "AppliSales", "CSV", "DataFrames", "Dates", "Serialization"]
+git-tree-sha1 = "deac114af49d9f6bad815b84e730e8e817b184b9"
 repo-rev = "master"
 repo-url = "https://github.com/rbontekoe/AppliAR.jl"
 uuid = "1e47966d-b897-4632-ad62-7297852c51dd"
-version = "0.2.3"
+version = "0.3.4"
 
 [[AppliGeneralLedger]]
 deps = ["DataFrames", "Dates", "Serialization"]
@@ -22,12 +22,6 @@ version = "0.1.2"
 
 [[Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
-
-[[BinaryProvider]]
-deps = ["Libdl", "Logging", "SHA"]
-git-tree-sha1 = "ecdec412a9abc8db54c0efc5548c64dfce072058"
-uuid = "b99e7846-7c00-51b0-8f62-c81ae34c0232"
-version = "0.5.10"
 
 [[CSV]]
 deps = ["CategoricalArrays", "DataFrames", "Dates", "FilePathsBase", "Mmap", "Parsers", "PooledArrays", "Tables", "Unicode", "WeakRefStrings"]
@@ -47,11 +41,6 @@ git-tree-sha1 = "054993b6611376ddb40203e973e954fd9d1d1902"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
 version = "3.12.0"
 
-[[DBInterface]]
-git-tree-sha1 = "7f678ccd98aef9d8462f79a6ba67bf263a67d27a"
-uuid = "a10d1c49-ce27-4219-8d33-6db1a4562965"
-version = "2.2.0"
-
 [[DataAPI]]
 git-tree-sha1 = "176e23402d80e7743fc26c19c681bfb11246af32"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
@@ -65,9 +54,9 @@ version = "0.20.2"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "be680f1ad03c0a03796aa3fda5a2180df7f83b46"
+git-tree-sha1 = "edad9434967fdc0a2631a65d902228400642120c"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.17.18"
+version = "0.17.19"
 
 [[DataValueInterfaces]]
 git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
@@ -220,18 +209,6 @@ version = "1.0.1"
 
 [[SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
-
-[[SQLite]]
-deps = ["BinaryProvider", "DBInterface", "Dates", "Libdl", "Random", "SQLite_jll", "Serialization", "Tables", "Test", "WeakRefStrings"]
-git-tree-sha1 = "25d88a45ce804e04a13ca00f1d67a35ac0e2ede6"
-uuid = "0aa819cd-b072-5ff4-a722-6bc24af294d9"
-version = "1.0.3"
-
-[[SQLite_jll]]
-deps = ["Libdl", "Pkg"]
-git-tree-sha1 = "25675b6872c3fcbe2034510db3a467405b6dc79e"
-uuid = "76ed43ae-9a5d-5a62-8c75-30186b810ce8"
-version = "3.31.1+0"
 
 [[Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"

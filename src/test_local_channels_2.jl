@@ -3,7 +3,7 @@
 using Pkg; Pkg.activate(".")
 
 # remove old stuff
-cmd = `rm test_invoicing.sqlite test_ledger.txt test_journal.txt`
+cmd = `rm test_invoicing.txt test_invoicing_paid.txt test_ledger.txt test_journal.txt`
 run(cmd)
 
 # enable distrbuted computing

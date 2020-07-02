@@ -132,7 +132,7 @@ function dispatcher()
     tx1 = task_1(rx) # process the orders
     tx2 = task_2(rx) # process the journal entries
     tx3 = task_3(rx) # process the unpaid invoices
-    task_4(rx)
+    task_4(rx) # listen to port 8000
 
     # definition Holy traits pattern Dispatcher in domain.jl
     dispatch(x::T) where {T} = dispatch(Dispatcher(T), x)

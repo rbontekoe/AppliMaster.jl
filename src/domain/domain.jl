@@ -1,6 +1,6 @@
 # domain.jl
 
-# Trait defenition dispatcher
+# Trait definition dispatcher
 abstract type Dispatcher end
 struct T0 <: Dispatcher end
 struct T1 <: Dispatcher end

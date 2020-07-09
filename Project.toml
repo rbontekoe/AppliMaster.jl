@@ -1,7 +1,15 @@
+name = "AppliMaster"
+uuid = "492a7865-3766-4ede-adfc-ae4dc5f45d12"
+authors = ["Rob Bontekoe"]
+version = "0.1.0"
+
 [deps]
-AppliAR = "1e47966d-b897-4632-ad62-7297852c51dd"
+AppliAR = "7e9bfa83-97d7-407e-9b29-58f52238cdb7"
 AppliGeneralLedger = "69311175-8ceb-4e66-8d4a-fec439d19437"
 AppliSales = "c1345d04-1a7a-4e7a-b935-9916dcf58fca"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+Query = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
 Rocket = "df971d30-c9d6-4b37-b8ff-e965b2cb3a40"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

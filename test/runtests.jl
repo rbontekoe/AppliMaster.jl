@@ -1,14 +1,16 @@
 # runtests.jl
 
+using AppliMaster
+
 using Test
 
-using AppliInvoicing, AppliSales, AppliGeneralLedger
-
-using DataFrames
+using AppliAR, AppliSales, AppliGeneralLedger
 
 using Query
 
-const PATH_CSV = "./bank.csv"
+using DataFrames
+
+using Dates
 
 @testset "Test AppliSales" begin
     orders = AppliSales.process()
@@ -19,47 +21,44 @@ const PATH_CSV = "./bank.csv"
     @test orders[1].training.price == 1000
 end
 
-@testset " Test AppliInvoicing - unpaid invoices" begin
-    #db = connect("./invoicing.sqlite")
+@testset " Test AppliAR - unpaid invoices" begin
     orders = AppliSales.process()
-    AppliInvoicing.process(orders)
+    AppliAR.process(orders)
     unpaid_invoices = retrieve_unpaid_invoices()
     @test length(unpaid_invoices) == 3
     @test id(unpaid_invoices[1]) == "A1001"
-    cmd = `rm test_invoicing.sqlite`
+    cmd = `rm test_invoicing.txt invoicenbr.txt`
     run(cmd)
 end
 
-@testset "Test AppliInvoicing - paid invoices" begin
-    #db = connect("./invoicing.sqlite")
+@testset "Test AppliAR - entries unpaid invoices" begin
     orders = AppliSales.process()
-    entries = AppliInvoicing.process(orders)
+    entries = AppliAR.process(orders)
     @test length(entries) == 3
     @test entries[1].from == 1300
     @test entries[1].to == 8000
     @test entries[1].debit == 1000
     @test entries[1].credit == 0
     @test entries[1].vat == 210.0
-    cmd = `rm test_invoicing.sqlite`
+    cmd = `rm test_invoicing.txt invoicenbr.txt`
     run(cmd)
 end
 
 @testset "Test GeneralLedger - accounts receivable, bank, vat, sales" begin
-
     orders = AppliSales.process()
 
-    journal_entries_unpaid_invoices = AppliInvoicing.process(orders)
+    journal_entries_unpaid_invoices = AppliAR.process(orders)
     AppliGeneralLedger.process(journal_entries_unpaid_invoices)
 
-    unpaid_invoices = AppliInvoicing.retrieve_unpaid_invoices()
+    unpaid_invoices = AppliAR.retrieve_unpaid_invoices()
+    stm1 = BankStatement(Date(2020-01-15), "Duck City Chronicals Invoice A1002", "NL39INGB", 2420.0)
+    stm2 = BankStatement(Date(2020-01-15), "Donalds Hardware Store Bill A1003", "NL39INGB", 1210.0)
+    stms = [stm1, stm2]
 
-    stms = AppliInvoicing.read_bank_statements("./bank.csv")
-
-    journal_entries_paid_invoices = AppliInvoicing.process(unpaid_invoices, stms)
-
+    journal_entries_paid_invoices = AppliAR.process(unpaid_invoices, stms)
     AppliGeneralLedger.process(journal_entries_paid_invoices)
 
-    df = DataFrame(AppliGeneralLedger.read_from_file("test_ledger.txt"))
+    df = DataFrame(AppliGeneralLedger.read_from_file("./test_ledger.txt"))
 
     df2 = df |> @filter(_.accountid == 1300) |> DataFrame
     @test sum(df2.debit - df2.credit) == 1210
@@ -75,6 +74,6 @@ end
 
     @test sum(df.debit - df.credit) == 0.0
 
-    cmd = `rm test_invoicing.sqlite test_journal.txt test_ledger.txt`
+    cmd = `rm test_invoicing.txt test_journal.txt test_ledger.txt invoicenbr.txt`
     run(cmd)
 end

@@ -74,6 +74,6 @@ end
 
     @test sum(df.debit - df.credit) == 0.0
 
-    cmd = `rm test_invoicing.txt test_journal.txt test_ledger.txt invoicenbr.txt`
+    cmd = `rm test_invoicing.txt test_invoicing_paid.txt test_journal.txt test_ledger.txt invoicenbr.txt`
     run(cmd)
 end

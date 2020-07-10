@@ -13,3 +13,6 @@ Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Query = "1a8c2f83-1ff3-5112-b086-8aa67b057ba1"
 Rocket = "df971d30-c9d6-4b37-b8ff-e965b2cb3a40"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+julia = "1.3"

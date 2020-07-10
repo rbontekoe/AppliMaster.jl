@@ -4,7 +4,11 @@
 
 using Pkg; Pkg.activate(".")
 
-using Rocket, AppliSales, AppliAR, AppliGeneralLedger, CSV, Query
+@info("remove old stuff")
+cmd = `rm test_invoicing.txt test_invoicing_paid.txt test_ledger.txt test_journal.txt invoicenbr.txt`
+run(cmd)
+
+using Rocket, AppliSales, AppliAR, AppliGeneralLedger, CSV, Query, DataFrames
 
 struct StmActor <: Actor{String} end
 Rocket.on_next!(actor::StmActor, data::String) = begin
@@ -64,19 +68,25 @@ subscribe!(from(["START"]), sales_actor)
 
 subscribe!(from(["READ_STMS"]), stm_actor)
 
-r = AppliAR.retrieve_unpaid_invoices()[1]
-println(r)
 
-println("")
-include("check_general_ledger.jl")
 
 r2 = AppliGeneralLedger.read_from_file("./test_ledger.txt")
 df = DataFrame(r2)
 println("\nGeneral Ledger mutations\n========================")
 show(df)
 
+r = DataFrame(report())
+println("\nUnpaid invoices\n$("="^15)")
+println(r)
+
 df2 = r2 |> @filter(_.accountid == 1300) |> DataFrame
-println("\nAccounts receivable\n===================")
-show(df2)
+balance_1300 = sum(df2.debit - df2.credit)
+
+df2 = df |> @filter(_.accountid == 8000) |> DataFrame
+balance_8000 = sum(df2.credit - df2.debit)
+
+println("")
+println("Balance accounts receivable is $balance_1300. Should be 1210.0.")
+println("Sales is $balance_8000. Should be 4000.0")
 
 # end

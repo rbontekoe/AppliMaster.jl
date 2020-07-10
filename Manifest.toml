@@ -2,7 +2,7 @@
 
 [[AppliAR]]
 deps = ["AppliGeneralLedger", "AppliSales", "CSV", "DataFrames", "Dates", "Serialization"]
-git-tree-sha1 = "2c27ab10cb3edae6d4c4c77d1a19cc99ccc628f2"
+git-tree-sha1 = "399b020c0465e6a5a18860d0fd329f9cd618ad89"
 repo-rev = "master"
 repo-url = "https://github.com/rbontekoe/AppliAR"
 uuid = "7e9bfa83-97d7-407e-9b29-58f52238cdb7"

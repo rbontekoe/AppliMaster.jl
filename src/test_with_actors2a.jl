@@ -85,8 +85,16 @@ balance_1300 = sum(df2.debit - df2.credit)
 df2 = df |> @filter(_.accountid == 8000) |> DataFrame
 balance_8000 = sum(df2.credit - df2.debit)
 
+df2 = df |> @filter(_.accountid == 1150) |> DataFrame
+balance_1150 = sum(df2.debit - df2.credit)
+
+df2 = df |> @filter(_.accountid == 4000) |> DataFrame
+balance_4000 = sum(df2.credit - df2.debit)
+
 println("")
-println("Balance accounts receivable is $balance_1300. Should be 1210.0.")
-println("Sales is $balance_8000. Should be 4000.0")
+println("Balance Accounts Receivable is $balance_1300. Should be 1210..")
+println("Sales is $balance_8000. Should be 4000.0.")
+println("Balance bank is $balance_1150. Should be 3630.0.")
+println("Balance VAT is $balance_4000. Shouldbe 840.0.")
 
 # end
